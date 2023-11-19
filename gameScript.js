@@ -12,10 +12,33 @@ const gameMenuDisplay = document.querySelector('.game-menu-display');
 const enemyWindow = document.querySelector('.enemy-window');
 const innerGameWindow = document.querySelector('.inner-game-window');
 
+const textWindow = document.createElement('p');
+textWindow.setAttribute('class', 'text-window');
+
 // BUTTONS
 const charSheetButton = document.querySelector('#char-sheet-button');
 const equipmentButton = document.querySelector('#equipment-button');
 const newGameButton = document.querySelector('#new-game-button');
+
+    // BUTTON HUB NAV ELEMENTS
+const hubNav = document.createElement('div');
+hubNav.setAttribute('class', 'hub-nav-container');
+const tavernButton = document.createElement('button');
+const trainingPitButton = document.createElement('button');
+const infirmaryButton = document.createElement('button');
+const quartermasterButton = document.createElement('button');
+const toNextFightButton = document.createElement('button');
+
+tavernButton.textContent = 'Tavern';
+trainingPitButton.textContent = 'Training Pit';
+infirmaryButton.textContent = 'Infirmary';
+quartermasterButton.textContent = 'Quartermaster';
+
+toNextFightButton.textContent = 'To Next Fight!';
+toNextFightButton.setAttribute('id', 'to-next-fight');
+
+const backButton = document.createElement('button');
+backButton.textContent = 'Go back to the arena';
 
 // CHARACTER AND NPC CLASSES
 let playerStats = {
@@ -127,7 +150,7 @@ enemyWindow.classList.toggle('hidden');
 innerGameWindow.style.border = 'none';
 
 newGameButton.addEventListener('click', newGame);
-createNewEnemy();
+tavernButton.addEventListener('click', displayTavern);
 // END GAME FLOW ----->
 
 // GAME FUNCTIONS
@@ -187,11 +210,29 @@ function newGame() {
             playerStats = fighterClasses[2];
         }
 
-        gameMenu.classList.toggle('hidden');
-        enemyWindow.classList.toggle('hidden');
         innerGameWindow.style.border = '';
-
         innerGameWindow.innerHTML = '';
+
+        textWindow.innerHTML = `In the dim-lit armory, the air hung heavy with the scent of oiled leather and anticipation. You are a new gladiator, a raw recruit with fire in your eyes, standing amidst a sea of dulled weaponry and battered, blood-stained armor. The arena blacksmiths, sweat pouring from their brows, unceremoniously pick out some of the more battle-worn pieces and toss them towards you. You try on an ill-fitting, matted leather breastplate and tie the straps tight around your shoulders. The clang of metal meeting metal echoes throughout the humid forge as a smith hands you an old bronze shortsword, its edge barely sharp enough to cut bread. A thin bronze cap is shoved onto your crown. <br><br>
+        "Good enough", grunts the smith. "We've been getting through a lot of new fighters recently. I bet you won't make it to the end of the week. Try not to bleed too much on the gear. It's a pain to clean." <br><br>
+        You push through the scrum of fellow recruits and head towards the door at the far end of the room. Your new gear will not protect you for long - for you to have any hope of victory, and the glory and denarii that will come with it, you will certainly need to train...` 
+        
+        innerGameWindow.appendChild(textWindow);
+
+        const continueGame = document.createElement('button');
+        continueGame.textContent = 'Continue...';
+        innerGameWindow.appendChild(continueGame);
+
+        continueGame.addEventListener('click', () => {
+            gameMenu.classList.toggle('hidden');
+            enemyWindow.classList.toggle('hidden');
+            enemyName.textContent = "Click 'To Next Fight' to continue!";
+            textWindow.innerHTML = '';
+            textWindow.style.border = 'none';
+            innerGameWindow.removeChild(continueGame);
+
+            displayHub();
+        })
     })
 }
 
@@ -233,7 +274,6 @@ function randomClass(array) {
     return array[random];
 }
   
-
 // NAVIGATING THE UI
 charSheetButton.addEventListener('click', () =>
     displayStats(playerStats)
@@ -278,4 +318,31 @@ function displayEquipment(object) {
     }
 
     gameMenuDisplay.appendChild(equipmentList);
+}
+
+function displayHub() {
+    hubNav.appendChild(tavernButton);
+    hubNav.appendChild(trainingPitButton);
+    hubNav.appendChild(infirmaryButton);
+    hubNav.appendChild(quartermasterButton);
+
+    innerGameWindow.appendChild(hubNav);
+    innerGameWindow.appendChild(toNextFightButton);
+}
+
+function displayTavern() {
+    toNextFightButton.style.display = 'none';
+    hubNav.innerHTML = '';
+    textWindow.style.border = '';
+    textWindow.innerHTML = `Beneath weathered stone arches, the entrance to the tavern beckons with the aroma of spiced wines and the murmur of animated chatter. Torchlight flickers on mosaic-laden walls depicting gladiatorial feats, while worn wooden tables groan under the weight of goblets and platters. Sweating patrons, packed in around the tables, clink vessels in jovial toasts as the distant roars of the arena's spectators add a rhythmic backdrop. The air hums with the stories of victorious warriors, shared over mugs of wine. The clinking of denarii being passed over the bar for drinks and bets on the gladiators punctuates the hubbub.`
+
+    innerGameWindow.appendChild(backButton);
+
+    backButton.addEventListener('click', () => {
+        innerGameWindow.removeChild(backButton);
+        textWindow.style.border = 'none';
+        textWindow.innerHTML = '';
+        toNextFightButton.style.display = 'inline';
+        displayHub();
+    });
 }

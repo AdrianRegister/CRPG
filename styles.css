@@ -39,6 +39,7 @@ button {
     font-size: 1em;
     background-color: black;
     color: white;
+    margin-left: 10px;
 }
 
 button:hover {
@@ -90,4 +91,32 @@ button:hover {
 
 .enemy-window h2 {
     font-size: 1.2em;
+}
+
+.hub-nav-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+}
+
+.hub-nav-container > * {
+    flex: 1;
+}
+
+#to-next-fight {
+    position: relative;
+    top: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: red;
+    color: bisque;
+}
+
+#to-next-fight:hover {
+    background-color: rgb(255, 132, 132);
+}
+
+.text-window {
+    border: 1px dotted black;
+    text-align: left;
 }
