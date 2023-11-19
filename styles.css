@@ -31,7 +31,7 @@ h2 {
 }
 
 #player-name-h {
-    font-size: 1.7em;
+    font-size: 1.2em;
 }
 
 button {
@@ -82,4 +82,12 @@ button:hover {
 #input-name {
     margin-top: 10px;
     margin-bottom: 25px;
+}
+
+.enemy-window {
+    font-size: 1.2em;
+}
+
+.enemy-window h2 {
+    font-size: 1.2em;
 }

@@ -38,4 +38,6 @@ equipment = object literal eg head: iron helmet (this is an equipment object)
 
 TODO - newgame function = click newgame button > empties innerHTML of main div. replaces it with: enter name, choose class, assign stats. when finished, main div is populated. DONE
 
-create Enemy class + constructor. populate enemy window with generated Enemy instance. Use random numbers to choose class and stats of enemy. 
+create Enemy class + constructor. populate enemy window with generated Enemy instance. Use random numbers to choose class and stats of enemy. DONE
+
+add buttons to show enemy stats and equipment. 
