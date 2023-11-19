@@ -1,0 +1,41 @@
+javascript rpg - Gladiator
+
+choose character class - Sword and shield / 2 hand / agile net and trident DO LATER
+choose stats - health / strength / dexterity / defense
+each stat uses a formula to calculate effectiveness (d&d rules?)
+
+menu on left with buttons. show char sheet / shop / other things
+img under menu - outline of person showing equipment
+
+series of encounters - get xp and level up. go through dungeons. fight bosses.
+roman arena? or elder scrolls style?
+
+PLAYER CHAR	BATTLE OPTIONS	   ENEMY
+EQUIPMENT	BATTLE OPTIONS	   EQUIPMENT
+		BATTLE OPTIONS
+
+PLAYER STATS			   ENEMY STATS
+
+
+
+enemies - levelled groups (0-5), (6-10)  etc. each group has stats chosen randomly within a range. 
+
+combat flavour text - attack / defend / feint / taunt moves each connect with an array of possible flavor text lines. use random picker function from silly story generator to randomly choose an array line.
+
+keep track of lifetime stats - total kills, damage dealt, damage received, etc
+
+HUMANS objects - person (name, class, level, stats, equipment)
+		>> enemy types(inherit from person)
+EQUIPMENT objects - gear (attack, defense, dexterity)
+		>> weapon types(inherit)
+		armor types(inherit)
+
+name = comes from arrays of first and last names, randomly chosen
+class = myrmidon, bruiser, defender, barbarian, hoplite. TO BEGIN: only myrmidon, barbarian, hoplite
+level = this starts at 1 and updates when xp is gained
+stats = object literal eg attack: 5
+equipment = object literal eg head: iron helmet (this is an equipment object)
+
+TODO - newgame function = click newgame button > empties innerHTML of main div. replaces it with: enter name, choose class, assign stats. when finished, main div is populated. DONE
+
+create Enemy class + constructor. populate enemy window with generated Enemy instance. Use random numbers to choose class and stats of enemy. 

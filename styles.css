@@ -1,0 +1,85 @@
+.hidden {
+    display: none;
+}
+
+html, body {
+    background-color: darkgray;
+    color: black;
+    margin: 15px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#main-game {
+    box-sizing: border-box;
+    width: 80vw;
+    height: 90vh;
+    border: 2px solid navy;
+    position: relative;
+    margin: 10px auto;
+    text-align: center;
+    padding: 25px;
+}
+
+h1 {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-weight: bold;
+    font-size: 3em;
+}
+
+h2 {
+    font-size: 2em;
+}
+
+#player-name-h {
+    font-size: 1.7em;
+}
+
+button {
+    padding: 15px;
+    font-size: 1em;
+    background-color: black;
+    color: white;
+}
+
+button:hover {
+    background-color: gray;
+}
+
+#game-window {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    height: 100%;
+}
+
+.game-menu,
+.inner-game-window,
+.enemy-window {
+    box-sizing: border-box;
+    border: 2px dashed navy;
+    flex: 1 0 20%;
+    max-height: 75%;
+    padding: 10px;
+}
+
+.game-menu > * {
+    margin-top: 10px;
+}
+
+.inner-game-window {
+    margin-left: 10px;
+    margin-right: 10px;
+    flex: 1 0 58%;
+    height: 75%;
+}
+
+.game-menu-display {
+    border: none;
+    box-sizing: border-box;
+    height: 69%;
+}
+
+#input-name {
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
