@@ -1,7 +1,7 @@
 javascript rpg - Gladiator
 
 choose character class - Sword and shield / 2 hand / agile net and trident DONE
-choose stats - health / strength / dexterity / defense IN PROGRESS
+choose stats - health / strength / dexterity / defense DROP IDEA FOR NOW
 each stat uses a formula to calculate effectiveness (d&d rules?) NOT DONE
 
 menu on left with buttons. show char sheet / shop / other things DONE
@@ -20,7 +20,7 @@ PLAYER STATS			   ENEMY STATS
 
 enemies - levelled groups (0-5), (6-10)  etc. each group has stats chosen randomly within a range. 
 
-combat flavour text - attack / defend / feint / taunt moves each connect with an array of possible flavor text lines. use random picker function from silly story generator to randomly choose an array line.
+combat flavour text - attack / defend / feint moves each connect with an array of possible flavor text lines. use random picker function from silly story generator to randomly choose an array line.
 
 keep track of lifetime stats - total kills, damage dealt, damage received, etc
 
@@ -38,13 +38,20 @@ equipment = object literal eg head: iron helmet (this is an equipment object) DO
 
 TODO - newgame function = click newgame button > empties innerHTML of main div. replaces it with: enter name, choose class, assign stats. when finished, main div is populated. DONE
 
-create Enemy class + constructor. populate enemy window with generated Enemy instance. Use random numbers to choose class and stats of enemy. DONE. STATS IN PROGRESS
+create Enemy class + constructor. populate enemy window with generated Enemy instance. Use random numbers to choose class and stats of enemy. DONE
 
 add buttons to show enemy stats and equipment. add a 'hub' to the main window. add hub buttons for different areas eg tavern, training pit, quartermaster, infirmary. add big button at bottom - 'next fight' DONE
 
-create hub areas. flavour text for each area. TAVERN DONE. STILL TO DO - TRAINING PIT, QUARTERMASTER, INFIRMARY.
+create hub areas. flavour text for each area. Merge displayFunctions into one displayHubArea(area) function. AREAS DONE. FUNCTION STILL TO DO. 
 
 start implementing combat system. attack / defend / feint, each with a percentage chance of success calculated by checking player's strength / defense / dexterity against opponent's.
 attack = dexterity vs defence.
 defend = defence vs dexterity.
-feint = dexterity vs defence. CHECK RANDOM FUNCTIONS FOR DUPLICATION
+feint = dexterity vs dexterity.
+
+
+
+if(hit) {
+  damage = (randomNumber(strength - 3, strength + 3) / strength) * 5.
+  enemy.hp - damage
+}

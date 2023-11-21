@@ -9,3 +9,15 @@ You push through the scrum of fellow recruits and head towards the door at the f
 TAVERN
 
 Beneath weathered stone arches, the entrance to the tavern beckons with the aroma of spiced wines and the murmur of animated chatter. Torchlight flickers on mosaic-laden walls depicting gladiatorial feats, while worn wooden tables groan under the weight of goblets and platters. Sweating patrons, packed in around the tables, clink vessels in jovial toasts as the distant roars of the arena's spectators add a rhythmic backdrop. The air hums with the stories of victorious warriors, shared over mugs of wine. The clinking of denarii being passed over the bar for drinks and bets on the gladiators punctuates the hubbub.
+
+TRAINING PIT
+
+Entering the gladiator's training room is a descent into a world of disciplined chaos. The air crackles with the clash of steel meeting steel, punctuated by grunts of exertion. Sunlight spills through high, narrow windows, casting long shadows on the sand-covered floor. Walls bear witness to the scars of countless duels, adorned with weapon racks and battered shields. Sweat-drenched bodies weave through the dance of combat, each fighter honing their skills under the watchful eyes of seasoned instructors. The metallic scent of blood and the rhythmic thud of training weapons create an atmosphere where warriors are forged, preparing for the brutal spectacle of the arena.
+
+INFIRMARY
+
+In the damp corridors adjacent to the roaring arena, the infirmary stands as a sanctuary for the wounded gladiators. The scent of medicinal herbs hangs in the musty air. Bare cots line the walls, some of them occupied by injured warriors in various states of discomfort and consciousness. Several of them are covered by white cloths, a chipped clay token indicating the body needs to be disposed of. The infirmary staff are poorly trained and constantly busy. They stink of alcohol. Provided you train well and are lucky, there may not be a need to suffer their treatment too often.
+
+QUARTERMASTER
+
+Tucked away in the bowels of the arena, not far from the training pits, the quartermaster's storeroom holds a motley assortment of bladed weapons, armours and replacement parts. Many of the items are available for trade and sale, provided you have the money available. From time to time, more exotic items pass through the quartermaster's hands, acquired through all manner of methods, each one more questionable than the last. You've heard rumours that these are only made available to veteran gladiators. If you survive long enough, you may one day be granted access.

@@ -93,13 +93,15 @@ button:hover {
     font-size: 1.2em;
 }
 
-.hub-nav-container {
+.hub-nav-container,
+.battle-nav-container {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-evenly;
 }
 
-.hub-nav-container > * {
+.hub-nav-container > *,
+.battle-nav-container > * {
     flex: 1;
 }
 
