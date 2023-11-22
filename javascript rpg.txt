@@ -45,13 +45,19 @@ add buttons to show enemy stats and equipment. add a 'hub' to the main window. a
 create hub areas. flavour text for each area. Merge displayFunctions into one displayHubArea(area) function. AREAS DONE. FUNCTION STILL TO DO. 
 
 start implementing combat system. attack / defend / feint, each with a percentage chance of success calculated by checking player's strength / defense / dexterity against opponent's.
-attack = dexterity vs defence.
-defend = defence vs dexterity.
-feint = dexterity vs dexterity.
+attack = dexterity vs dexterity. attacks normally. roll for hit and apply damage.
+defend = defence vs dexterity. doesn't attack. if successful, recovers a bit of health.
+feint = dexterity vs dexterity. if successful, adds a modifier to next attack. IGNORE FOR NOW
 
+formula to determine successful action:
+number1 = random_number(1, 23)
+        to_hit = number1 + char1_dex
+        number2 = random_number(1, 23)
+        defended = number2 + char2_def
+   if to_hit > defended, ACTION IS SUCCESSFUL
 
+damage formula
+strength vs defence. 
+random_modifier = random_number(1, 20)
+damage = (strength + random_modifier) - defence CALCS AND FORMULAE DONE. IMPLEMENT INTO gameScript.js
 
-if(hit) {
-  damage = (randomNumber(strength - 3, strength + 3) / strength) * 5.
-  enemy.hp - damage
-}

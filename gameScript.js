@@ -59,25 +59,25 @@ const fighterClasses = [
     {
         Class: 'Myrmidon',
         Level: 1,
-        Health: 10,
+        Health: 25,
         Strength: 7,
-        Dexterity: 7,
-        Defense: 7,
+        Dexterity: 6,
+        Defense: 6,
         Kills: 0
     },
     {
         Class: 'Barbarian',
         Level: 1,
-        Health: 15,
-        Strength: 10,
-        Dexterity: 3,
-        Defense: 3,
+        Health: 37,
+        Strength: 12,
+        Dexterity: 5,
+        Defense: 5,
         Kills: 0
     },
     {
         Class: 'Hoplite',
         Level: 1,
-        Health: 12,
+        Health: 30,
         Strength: 5,
         Dexterity: 5,
         Defense: 10,
@@ -94,7 +94,7 @@ class Enemy {
     equipment;
 
     enemyStats = {
-        Health: 10,
+        Health: 25,
         Strength: 5,
         Dexterity: 5,
         Defense: 5
@@ -315,12 +315,12 @@ function calculateStats(oppLevel, enemyStats, fighterClass) {
         enemyStats.Dexterity = 7;
         enemyStats.Defense = 7;
     } else if (fighterClass.Class === 'Barbarian') {
-        enemyStats.Health = 15;
+        enemyStats.Health = 37;
         enemyStats.Strength = 10;
         enemyStats.Dexterity = 3;
         enemyStats.Defense = 3;
     } else if (fighterClass.Class === 'Hoplite') {
-        enemyStats.Health = 12;
+        enemyStats.Health = 30;
         enemyStats.Defense = 10;
     }
 
