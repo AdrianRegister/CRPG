@@ -5,6 +5,7 @@ const playerNameHeader = document.querySelector('#player-name-h');
 const enemyName = document.querySelector('#enemy-name');
 const enemyLevel = document.querySelector('#enemy-level');
 const enemyClass = document.querySelector('#enemy-class');
+const oppStatsList = document.querySelector('.opp-stats-list');
 
 // DISPLAYS AND WINDOWS
 const gameMenu = document.querySelector('.game-menu');
@@ -69,7 +70,7 @@ const fighterClasses = [
         Class: 'Barbarian',
         Level: 1,
         Health: 37,
-        Strength: 12,
+        Strength: 10,
         Dexterity: 5,
         Defense: 5,
         Kills: 0
@@ -119,19 +120,16 @@ class Enemy {
             return randomNumber(6, 15);
         }    
     }
-
-    displayOppStats(enemyStats) {
-        const oppStatsList = document.createElement('div');
-    
-        for (const [stat, value] of Object.entries(enemyStats)) {
-            const statLine = document.createElement('p');
-            statLine.textContent = `${stat}: ${value}`;
-            oppStatsList.appendChild(statLine);
-        }
-        
-        enemyWindow.appendChild(oppStatsList);
-    }
 }
+
+class bronzeSword {
+    name = 'Bronze shortsword';
+    damage = Array.from(Array(9).keys()).slice(1);
+    value = 5;
+    description = 'A basic bronze shortsword. Useful for cutting bread, skinning small animals, and not much else.';
+}
+
+const bronzeShortsword = new bronzeSword;
 
 // NAMES
 const firstNames = [
@@ -344,27 +342,112 @@ function battle() {
     toNextFightButton.style.display = 'none';
 
     let enemy = createNewEnemy();
-    enemy.displayOppStats(enemy.enemyStats);
+    let enemyAlive = true;
+    let playerAlive = true;
+    displayOppStats(enemy.enemyStats);
 
     textWindow.style.border = '';
     textWindow.innerHTML = `Your opponent, ${enemy.name}, stands across the sand from you. Like you, he is a fellow recruit, and this is his first fight.<br><br>He seems nervous, and clenches his weapon tightly. You both slowly circle each other, neither of you willing to overly commit. The early afternoon sun hangs high above. The arena stands are mostly empty - there are not many people interested in seeing two novices fight.<br><br>Your mouth is dry and your heart is beating painfully against your ribcage as you take one, then two, then three steps towards your opponent. Raising his shield to meet your tentative charge, the duel begins!`;
 
+    // CREATES BATTLE UI ELEMENTS
     const battleNav = document.createElement('div');
     battleNav.setAttribute('class', 'battle-nav-container');
 
+    const battleText = document.createElement('p');
+    battleText.setAttribute('class', 'battle-text');
+
+    const opponentBattleText = document.createElement('p');
+    opponentBattleText.setAttribute('class', 'battle-text');
+
     const attackButton = document.createElement('button');
-    const defendButton = document.createElement('button');
-    const feintButton = document.createElement('button');
+    /* const defendButton = document.createElement('button');
+    const feintButton = document.createElement('button'); */
 
     attackButton.textContent = 'Attack!';
-    defendButton.textContent = 'Defend!';
-    feintButton.textContent = 'Feint!';
+    /* defendButton.textContent = 'Defend!';
+    feintButton.textContent = 'Feint!'; */
 
     battleNav.appendChild(attackButton);
-    battleNav.appendChild(defendButton);
-    battleNav.appendChild(feintButton);
+    /* battleNav.appendChild(defendButton);
+    battleNav.appendChild(feintButton); */
 
+    innerGameWindow.appendChild(battleText);
+    innerGameWindow.appendChild(opponentBattleText);
     innerGameWindow.appendChild(battleNav);
+
+    battleText.innerHTML = 'The battle begins!';
+    opponentBattleText.innerHTML = 'Your opponent watches you carefully.';
+    let playerTurn = true;
+
+    attackButton.addEventListener('click', () => {
+        battleText.classList.add('expanded');
+        setTimeout(function() {
+            battleText.classList.remove('expanded');
+        }, 300);
+
+        battleText.innerHTML = 'You strike! ';
+        const hit = rollToHit(playerStats.Dexterity, enemy.enemyStats.Dexterity);
+
+        if (hit) {
+            battleText.innerHTML += 'Your blow hits true! Your opponent grunts in pain and grits his teeth.'
+            const damage = calculateDamage(bronzeShortsword.damage, playerStats.Strength)
+            enemy.enemyStats.Health -= damage;
+            console.log('Hit!');
+            console.log(`Damage: ${damage}. Enemy health: ${enemy.enemyStats.Health}`);
+        } else {
+            battleText.innerHTML += 'Your wild blow strikes thin air, your opponent having stepped out of the way just in time.'
+            console.log('Miss!');
+        }
+
+        if (enemy.enemyStats.Health < 1) {
+            enemyAlive = false;
+            enemy.enemyStats.Health = 'Dead!';
+            battleText.innerHTML += ` ${enemy.name} staggers backwards, blood pouring from his wounds. You step forward and deliver the death blow!`;
+            battleText.innerHTML += '<br><br>Your foe crumples to the ground and lies motionless, his blood streaming into the sand beneath. The handful of spectators mutter among themselves. Some of them clap, the sound echoing hollowly around the sparsely-populated arena. As the rush of survival floods your body, your ragged breathing slowly begins returning to normal. You have survived your first fight! You stand victorious!';
+            battleNav.parentElement.removeChild(battleNav);
+            opponentBattleText.innerHTML = '';
+            opponentBattleText.style.border = 'none';
+        }
+        
+        displayOppStats(enemy.enemyStats);
+        playerTurn = false;
+
+        if (!playerTurn && enemyAlive) {
+            const hit = rollToHit(enemy.enemyStats.Dexterity, playerStats.Dexterity);
+
+            opponentBattleText.classList.add('expanded');
+            setTimeout(function() {
+                opponentBattleText.classList.remove('expanded');
+            }, 300);
+    
+            if (hit) {
+                opponentBattleText.innerHTML = `${enemy.name}'s strike hits home! You wince and gasp in pain. Your vision blurs and you take a step back out of harm's way.`;
+                const damage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength)
+                playerStats.Health -= damage;
+                console.log('Opponent hits!');
+                console.log(`Damage: ${damage}. Your health: ${playerStats.Health}`);
+            } else {
+                opponentBattleText.innerHTML = `${enemy.name} aims a blow in your direction, but his weapon passes harmlessly through the space you occupied only moments before.`;
+                console.log('Opponent misses!');
+            }
+    
+            if (playerStats.Health < 1) {
+                opponentBattleText.innerHTML = '';
+                opponentBattleText.style.border = 'none';
+                playerAlive = false;
+                playerStats.Health = 'Dead!';
+                battleText.innerHTML += `Your vision darkens as pain overwhelms you. Your strength is deserting you and you drop to one knee, your weapon clanging to the ground. Your opponent stands above you. He raises his arm one last time.`;
+                battleText.innerHTML += '<br><br>' + `${enemy.name}'s blow knocks you fully to the ground and your face hits the sand. Your senses quickly begin to fail. The noise of the arena fades and is replaced by a gentle ringing. Mercifully, the pain also begins to ebb. You do not even notice how warm and wet the sand beneath you has become, saturated as it is with your blood. You let out one final weak, rasping breath and lie still. The world vanishes.`;
+                addBlankLine(3);
+                battleText.innerHTML += 'You are dead!';
+                battleNav.parentElement.removeChild(battleNav);
+            }
+   
+        displayStats(playerStats);
+        playerTurn = true;
+
+        }
+    });
 }
 
 // UTILITY FUNCTIONS
@@ -389,6 +472,24 @@ function randomName(firstName, lastName) {
     const random2 = Math.floor(Math.random() * lastName.length);
     return firstName[random1] + ' ' + lastName[random2];
 }
+
+// COMBAT FUNCTIONS
+function rollToHit(char1Dexterity, char2Dexterity) {
+    const randomModifierAttacker = randomNumber(1, 23);
+    const randomModifierDefender = randomNumber(1, 23);
+
+    const toHitChance = char1Dexterity + randomModifierAttacker;
+    const toDefendChance = char2Dexterity + randomModifierDefender;
+    console.log(`Attack mod: ${randomModifierAttacker}. Defence mod: ${randomModifierDefender}. 
+                 Hit: ${toHitChance}. Defend: ${toDefendChance}`);
+
+    return toHitChance > toDefendChance;
+}
+
+function calculateDamage(weaponDamage, char1Strength) {
+    strengthModifier = char1Strength / 2
+    return strengthModifier + randomValueFromArray(weaponDamage);
+}
   
 // NAVIGATING THE UI
 charSheetButton.addEventListener('click', () =>
@@ -405,7 +506,7 @@ let playerEquipment = {
     Torso: 'Leather armour',
     Legs: 'Nothing!',
     Feet: 'Sandals',
-    Weapon: 'Bronze shortsword',
+    Weapon: bronzeShortsword.name,
     Offhand: 'Leather buckler'
 }
 
@@ -424,15 +525,13 @@ function displayStats(object) {
 }
 
 function displayOppStats(object) {
-    const oppStatsList = document.createElement('div');
+    oppStatsList.innerHTML = '';
 
     for (const [stat, value] of Object.entries(object)) {
         const statLine = document.createElement('p');
         statLine.textContent = `${stat}: ${value}`;
         oppStatsList.appendChild(statLine);
     }
-    
-    enemyWindow.appendChild(oppStatsList);
 }
 
 function displayEquipment(object) {

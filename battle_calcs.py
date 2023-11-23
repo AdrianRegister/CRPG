@@ -19,9 +19,10 @@ def roll_to_hit(number_of_tests, char1_dex, char2_dex):
 
     return hit
 
-def calculate_damage(char1_str, char2_def):
-    number1 = random_number(1, 20)
-    damage = (char1_str + number1) - char2_def
+def calculate_damage(char1_str):
+    number1 = random_number(1,8)
+    str_modifier = char1_str / 2
+    damage = (str_modifier + number1)
 
     return damage
 
@@ -32,6 +33,7 @@ def time_to_kill(char1_HP, damage_function, hit_function):
         if hit_function():
             print('hit!')
             char1_HP -= damage_function()
+            print(f"damage: {damage_function()}")
         else:
             print('miss!')
             turn += 1
@@ -49,7 +51,7 @@ barb_dex = 5
 myr_dex = 6
 hop_dex = 5
 
-barb_str = 12
+barb_str = 10
 myr_str = 7
 hop_str = 5
 
@@ -74,5 +76,5 @@ while j < 100:
     j += 1
 print(f"Average damage: {total_damage / j}")    """ 
 
-turns = time_to_kill(30, lambda: calculate_damage(barb_str, myr_def), lambda: roll_to_hit(1, barb_dex, myr_dex))
+turns = time_to_kill(30, lambda: calculate_damage(barb_str), lambda: roll_to_hit(1, barb_dex, hop_dex))
 print(turns)
