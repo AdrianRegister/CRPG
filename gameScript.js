@@ -46,6 +46,8 @@ let playerLevel = 1;
 let gameState = 1; // This indicates the progress through the game. After each fight, the gamestate will be increased by 1. 
                    // At this point, training points will be refreshed to 3 and player money and experience assigned. The gamestate
                    // will also control various flavour texts and rare item drop chance.
+let playerXP = 0
+let playerMoney = 15                  
 
 // CHARACTER AND NPC CLASSES
 let playerStats = {
@@ -53,7 +55,7 @@ let playerStats = {
     Strength: 5,
     Dexterity: 5,
     Defense: 5,
-    Kills: 0
+    Kills: 0,
 }
 
 const fighterClasses = [
@@ -64,7 +66,9 @@ const fighterClasses = [
         Strength: 7,
         Dexterity: 6,
         Defense: 6,
-        Kills: 0
+        Kills: 0,
+        Money: playerMoney,
+        Experience: playerXP
     },
     {
         Class: 'Barbarian',
@@ -73,7 +77,9 @@ const fighterClasses = [
         Strength: 10,
         Dexterity: 5,
         Defense: 5,
-        Kills: 0
+        Kills: 0,
+        Money: playerMoney,
+        Experience: playerXP
     },
     {
         Class: 'Hoplite',
@@ -82,7 +88,9 @@ const fighterClasses = [
         Strength: 5,
         Dexterity: 5,
         Defense: 10,
-        Kills: 0
+        Kills: 0,
+        Money: playerMoney,
+        Experience: playerXP
     }
 ];
 
@@ -129,7 +137,15 @@ class bronzeSword {
     description = 'A basic bronze shortsword. Useful for cutting bread, skinning small animals, and not much else.';
 }
 
+class leatherChest {
+    name = 'Leather armour';
+    protection = 1;
+    value = 5;
+    description = `A basic, worn leather chestpiece. It's better than fighting naked.`
+}
+
 const bronzeShortsword = new bronzeSword;
+const leatherArmour = new leatherChest;
 
 // NAMES
 const firstNames = [
@@ -266,7 +282,7 @@ function newGame() {
         innerGameWindow.style.border = '';
         innerGameWindow.innerHTML = '';
 
-        textWindow.innerHTML = `In the dim-lit armory, the air hung heavy with the scent of oiled leather and anticipation. You are a new gladiator, a raw recruit with fire in your eyes, standing amidst a sea of dulled weaponry and battered, blood-stained armor. The arena blacksmiths, sweat pouring from their brows, unceremoniously pick out some of the more battle-worn pieces and toss them towards you. You try on an ill-fitting, matted leather breastplate and tie the straps tight around your shoulders. The clang of metal meeting metal echoes throughout the humid forge as a smith hands you an old bronze shortsword, its edge barely sharp enough to cut bread. A thin bronze cap is shoved onto your crown. <br><br>
+        textWindow.innerHTML = `In the dim-lit armory, the air hung heavy with the scent of oiled leather and anticipation. You are a new gladiator, a raw recruit with fire in your eyes, standing amidst a sea of dulled weaponry and battered, blood-stained armor. The arena blacksmiths, sweat pouring from their brows, unceremoniously pick out some of the more battle-worn pieces and toss them towards you. You try on an ill-fitting, matted leather breastplate and tie the straps tight around your shoulders. The clang of metal meeting metal echoes throughout the humid forge as a smith hands you an old bronze shortsword, its edge barely sharp enough to cut bread. A thin bronze cap is shoved onto your head. <br><br>
         "Good enough", grunts the smith. "We've been getting through a lot of new fighters recently. I bet you won't make it to the end of the week. Try not to bleed too much on the gear. It's a pain to clean." <br><br>
         You push through the scrum of fellow recruits and head towards the door at the far end of the room. Your new gear will not protect you for long - for you to have any hope of victory, and the glory and denarii that will come with it, you will certainly need to train...` 
         
@@ -359,6 +375,9 @@ function battle() {
     const opponentBattleText = document.createElement('p');
     opponentBattleText.setAttribute('class', 'battle-text');
 
+    const victoryButton = document.createElement('button');
+    victoryButton.textContent = 'Victory!';
+
     const attackButton = document.createElement('button');
     /* const defendButton = document.createElement('button');
     const feintButton = document.createElement('button'); */
@@ -390,7 +409,7 @@ function battle() {
 
         if (hit) {
             battleText.innerHTML += 'Your blow hits true! Your opponent grunts in pain and grits his teeth.'
-            const damage = calculateDamage(bronzeShortsword.damage, playerStats.Strength)
+            const damage = calculateDamage(playerEquipment.Weapon.damage, playerStats.Strength)
             enemy.enemyStats.Health -= damage;
             console.log('Hit!');
             console.log(`Damage: ${damage}. Enemy health: ${enemy.enemyStats.Health}`);
@@ -407,6 +426,9 @@ function battle() {
             battleNav.parentElement.removeChild(battleNav);
             opponentBattleText.innerHTML = '';
             opponentBattleText.style.border = 'none';
+            playerStats.Kills += 1;
+            
+            innerGameWindow.appendChild(victoryButton);
         }
         
         displayOppStats(enemy.enemyStats);
@@ -423,9 +445,10 @@ function battle() {
             if (hit) {
                 opponentBattleText.innerHTML = `${enemy.name}'s strike hits home! You wince and gasp in pain. Your vision blurs and you take a step back out of harm's way.`;
                 const damage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength)
-                playerStats.Health -= damage;
+                const damageAfterArmour = damage - playerEquipment.Torso.protection;
+                playerStats.Health -= damageAfterArmour;
                 console.log('Opponent hits!');
-                console.log(`Damage: ${damage}. Your health: ${playerStats.Health}`);
+                console.log(`Damage: ${damageAfterArmour}. Your health: ${playerStats.Health}`);
             } else {
                 opponentBattleText.innerHTML = `${enemy.name} aims a blow in your direction, but his weapon passes harmlessly through the space you occupied only moments before.`;
                 console.log('Opponent misses!');
@@ -437,9 +460,8 @@ function battle() {
                 playerAlive = false;
                 playerStats.Health = 'Dead!';
                 battleText.innerHTML += `Your vision darkens as pain overwhelms you. Your strength is deserting you and you drop to one knee, your weapon clanging to the ground. Your opponent stands above you. He raises his arm one last time.`;
-                battleText.innerHTML += '<br><br>' + `${enemy.name}'s blow knocks you fully to the ground and your face hits the sand. Your senses quickly begin to fail. The noise of the arena fades and is replaced by a gentle ringing. Mercifully, the pain also begins to ebb. You do not even notice how warm and wet the sand beneath you has become, saturated as it is with your blood. You let out one final weak, rasping breath and lie still. The world vanishes.`;
-                addBlankLine(3);
-                battleText.innerHTML += 'You are dead!';
+                battleText.innerHTML += '<br><br>' + `${enemy.name}'s blow knocks you fully to the ground and your face hits the dirt. Your senses quickly begin to fail. The noise of the arena fades and is replaced by a gentle ringing. Mercifully, the pain also begins to ebb. You do not even notice how warm and wet the sand beneath you has become, saturated as it is with your blood. You let out one final weak, rasping breath and lie still. The world vanishes.`;
+                battleText.innerHTML += '<br><br>You are dead!';
                 battleNav.parentElement.removeChild(battleNav);
             }
    
@@ -447,6 +469,20 @@ function battle() {
         playerTurn = true;
 
         }
+    });
+
+    victoryButton.addEventListener('click', () => {
+        textWindow.innerHTML = '';
+        textWindow.style.border = 'none';
+
+        innerGameWindow.removeChild(victoryButton);
+        innerGameWindow.removeChild(battleText);
+        innerGameWindow.removeChild(opponentBattleText);
+
+        gameState += 1
+        playerStats.Money += 10 * (enemy.level + 0.2)
+        playerStats.Experience += 100 * (enemy.level + 0.2)
+        displayHub();
     });
 }
 
@@ -492,9 +528,10 @@ function calculateDamage(weaponDamage, char1Strength) {
 }
   
 // NAVIGATING THE UI
-charSheetButton.addEventListener('click', () =>
+charSheetButton.addEventListener('click', () => {
+    console.log(playerStats)
     displayStats(playerStats)
-);
+});
 
 equipmentButton.addEventListener('click', () =>
     displayEquipment(playerEquipment)
@@ -503,14 +540,15 @@ equipmentButton.addEventListener('click', () =>
 // EQUIPMENT TABLES
 let playerEquipment = {
     Head: 'Bronze cap',
-    Torso: 'Leather armour',
+    Torso: leatherArmour,
     Legs: 'Nothing!',
     Feet: 'Sandals',
-    Weapon: bronzeShortsword.name,
+    Weapon: bronzeShortsword,
     Offhand: 'Leather buckler'
 }
 
 // UI DISPLAY FUNCTIONS
+
 function displayStats(object) {
     gameMenuDisplay.innerHTML = '';
     const statsList = document.createElement('div');
@@ -519,6 +557,7 @@ function displayStats(object) {
         const statLine = document.createElement('p');
         statLine.textContent = `${stat}: ${value}`;
         statsList.appendChild(statLine);
+        console.log(stat, value)
     }
     
     gameMenuDisplay.appendChild(statsList);
@@ -555,6 +594,9 @@ function displayHub() {
 
     innerGameWindow.appendChild(hubNav);
     innerGameWindow.appendChild(toNextFightButton);
+
+    hubNav.style.display = 'block';
+    toNextFightButton.style.display = 'block';
 }
 
 function displayTavern() {
