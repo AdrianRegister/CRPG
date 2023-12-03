@@ -2,7 +2,7 @@ javascript rpg - Gladiator
 
 choose character class - Sword and shield / 2 hand / agile net and trident DONE
 choose stats - health / strength / dexterity / defense DROP IDEA FOR NOW
-each stat uses a formula to calculate effectiveness (d&d rules?) NOT DONE
+each stat uses a formula to calculate effectiveness (d&d rules?) DONE
 
 menu on left with buttons. show char sheet / shop / other things DONE
 img under menu - outline of person showing equipment DROP IDEA FOR NOW
@@ -22,17 +22,17 @@ enemies - levelled groups (0-5), (6-10)  etc. each group has stats chosen random
 
 combat flavour text - attack / defend / feint moves each connect with an array of possible flavor text lines. use random picker function from silly story generator to randomly choose an array line.
 
-keep track of lifetime stats - total kills, damage dealt, damage received, etc
+keep track of lifetime stats - total kills, damage dealt, damage received, etc KILLS TRACKED. DAMAGE NOT YET TRACKED
 
 HUMANS objects - person (name, class, level, stats, equipment)
 		>> enemy types(inherit from person) 		DONE
-EQUIPMENT objects - gear (attack, defense, dexterity)		NOT DONE
+EQUIPMENT objects - gear (attack, defense, dexterity)		DONE, BUT MORE ITEMS YET TO BE CREATED
 		>> weapon types(inherit)
 		armor types(inherit)
 
 name = comes from arrays of first and last names, randomly chosen DONE
-class = myrmidon, bruiser, defender, barbarian, hoplite. TO BEGIN: only myrmidon, barbarian, hoplite DONE 
-level = this starts at 1 and updates when xp is gained IN PROGRESS
+class = myrmidon, barbarian, hoplite. DONE 
+level = this starts at 1 and updates when xp is gained XP DONE. TODO - IMPLEMENT LEVEL UP FUNCTION
 stats = object literal eg attack: 5 			DONE
 equipment = object literal eg head: iron helmet (this is an equipment object) DONE
 
@@ -42,23 +42,25 @@ create Enemy class + constructor. populate enemy window with generated Enemy ins
 
 add buttons to show enemy stats and equipment. add a 'hub' to the main window. add hub buttons for different areas eg tavern, training pit, quartermaster, infirmary. add big button at bottom - 'next fight' DONE
 
-create hub areas. flavour text for each area. Merge displayFunctions into one displayHubArea(area) function. AREAS DONE. FUNCTION STILL TO DO. 
+create hub areas. flavour text for each area. AREAS DONE. TODO - TAVERN (buy drink, start brawl)
 
-start implementing combat system. attack / defend / feint, each with a percentage chance of success calculated by checking player's strength / defense / dexterity against opponent's.
-attack = dexterity vs dexterity. attacks normally. roll for hit and apply damage.
-defend = defence vs dexterity. doesn't attack. if successful, recovers a bit of health. IGNORE FOR NOW
-feint = dexterity vs dexterity. if successful, adds a modifier to next attack. IGNORE FOR NOW
+start implementing combat system. attack / defend / feint, each with a percentage chance of success calculated by checking player's 	strength / defense / dexterity against opponent's. DONE
+	attack = dexterity vs dexterity. attacks normally. roll for hit and apply damage. DONE
+	defend = defence vs dexterity. doesn't attack. if successful, recovers a bit of health. IGNORE FOR NOW
+	feint = dexterity vs dexterity. if successful, adds a modifier to next attack. IGNORE FOR NOW
 
-formula to determine successful action:
-number1 = random_number(1, 23)
-        to_hit = number1 + char1_dex
-        number2 = random_number(1, 23)
-        defended = number2 + char2_def
-   if to_hit > defended, ACTION IS SUCCESSFUL	DONE
+	formula to determine successful action:
+	number1 = random_number(1, 23)
+        	to_hit = number1 + char1_dex
+        	number2 = random_number(1, 23)
+        	defended = number2 + char2_def
+   	if to_hit > defended, ACTION IS SUCCESSFUL	DONE
 
-damage formula
-strength vs defence. 
-random_modifier = random_number(1, 20)
-damage = (strength + random_modifier)	DONE
+	damage formula
+	strength vs defence. 
+	random_modifier = random_number(1, 20)
+	damage = (strength + random_modifier)	DONE
 
-add equipment. use tiers bronze > iron > steel > 
+add equipment. use tiers bronze > iron > steel > legendary
+
+implement training points and training pit area functionality

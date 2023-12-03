@@ -130,22 +130,61 @@ class Enemy {
     }
 }
 
-class bronzeSword {
-    name = 'Bronze shortsword';
-    damage = Array.from(Array(9).keys()).slice(1);
-    value = 5;
-    description = 'A basic bronze shortsword. Useful for cutting bread, skinning small animals, and not much else.';
+class Weapon {
+    name
+    damage
+    value
+    description
+
+    constructor(name, damage, value, description) {
+        this.name = name,
+        this.damage = damage,
+        this.value = value, 
+        this.description = description
+    }
 }
 
-class leatherChest {
-    name = 'Leather armour';
-    protection = 1;
-    value = 5;
-    description = `A basic, worn leather chestpiece. It's better than fighting naked.`
+class Armour {
+    name
+    protection
+    value
+    description
+
+    constructor(name, protection, value, description) {
+        this.name = name,
+        this.protection = protection,
+        this.value = value,
+        this.description = description
+    }
 }
 
-const bronzeShortsword = new bronzeSword;
-const leatherArmour = new leatherChest;
+const bronzeShortsword = new Weapon(
+    'Bronze shortsword', 
+    damage = Array.from(Array(9).keys()).slice(1),
+    5,
+    'A basic bronze shortsword. Useful for cutting bread, skinning small animals, and not much else.'
+    )
+
+const leatherArmour = new Armour(
+    'Leather armour',
+    1,
+    5,
+    "A basic, worn leather chestpiece. It's better than fighting naked."
+)
+
+const bronzeCap = new Armour(
+    'Bronze cap',
+    1,
+    5,
+    'A crudely-beaten sheet of bronze that has been roughly shaped into something resembling a basic helmet.'
+)
+
+const leatherBuckler = new Armour(
+    'Leather buckler',
+    1,
+    5,
+    "A circle of wood reinforced with boiled leather strips. It doesn't smell very good."
+)
 
 // NAMES
 const firstNames = [
@@ -282,7 +321,7 @@ function newGame() {
         innerGameWindow.style.border = '';
         innerGameWindow.innerHTML = '';
 
-        textWindow.innerHTML = `In the dim-lit armory, the air hung heavy with the scent of oiled leather and anticipation. You are a new gladiator, a raw recruit with fire in your eyes, standing amidst a sea of dulled weaponry and battered, blood-stained armor. The arena blacksmiths, sweat pouring from their brows, unceremoniously pick out some of the more battle-worn pieces and toss them towards you. You try on an ill-fitting, matted leather breastplate and tie the straps tight around your shoulders. The clang of metal meeting metal echoes throughout the humid forge as a smith hands you an old bronze shortsword, its edge barely sharp enough to cut bread. A thin bronze cap is shoved onto your head. <br><br>
+        textWindow.innerHTML = `In the dim-lit armory, the air hung heavy with the scent of oiled leather and anticipation. You are a new gladiator, a raw recruit with fire in your eyes, standing amidst a sea of dulled weaponry and battered, blood-stained armor. The arena blacksmiths, sweat pouring from their brows, unceremoniously pick out some of the more battle-worn pieces and toss them towards you. You try on an ill-fitting, matted leather breastplate and tie the straps tight around your shoulders. The clang of metal meeting metal echoes throughout the humid forge as a smith hands you an old bronze shortsword, its edge barely sharp enough to cut bread. A thin bronze cap is shoved onto your head as he gestures towards the leather shields hanging from the wall, signalling that you should take one. <br><br>
         "Good enough", grunts the smith. "We've been getting through a lot of new fighters recently. I bet you won't make it to the end of the week. Try not to bleed too much on the gear. It's a pain to clean." <br><br>
         You push through the scrum of fellow recruits and head towards the door at the far end of the room. Your new gear will not protect you for long - for you to have any hope of victory, and the glory and denarii that will come with it, you will certainly need to train...` 
         
@@ -409,7 +448,7 @@ function battle() {
 
         if (hit) {
             battleText.innerHTML += 'Your blow hits true! Your opponent grunts in pain and grits his teeth.'
-            const damage = calculateDamage(playerEquipment.Weapon.damage, playerStats.Strength)
+            const damage = calculateDamage(playerEquipment.Weapon[1], playerStats.Strength)
             enemy.enemyStats.Health -= damage;
             console.log('Hit!');
             console.log(`Damage: ${damage}. Enemy health: ${enemy.enemyStats.Health}`);
@@ -445,7 +484,14 @@ function battle() {
             if (hit) {
                 opponentBattleText.innerHTML = `${enemy.name}'s strike hits home! You wince and gasp in pain. Your vision blurs and you take a step back out of harm's way.`;
                 const damage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength)
-                const damageAfterArmour = damage - playerEquipment.Torso.protection;
+                const damageAfterArmour = damage - (
+                    playerEquipment.Torso[1] + 
+                    playerEquipment.Head[1] +
+                    playerEquipment.Offhand[1]
+                    )
+                if (damageAfterArmour < 0) {
+                    damageAfterArmour === 1
+                }                 
                 playerStats.Health -= damageAfterArmour;
                 console.log('Opponent hits!');
                 console.log(`Damage: ${damageAfterArmour}. Your health: ${playerStats.Health}`);
@@ -517,7 +563,7 @@ function rollToHit(char1Dexterity, char2Dexterity) {
 
     const toHitChance = char1Dexterity + randomModifierAttacker;
     const toDefendChance = char2Dexterity + randomModifierDefender;
-    console.log(`Attack mod: ${randomModifierAttacker}. Defence mod: ${randomModifierDefender}. 
+    console.log(`Attack modifier: ${randomModifierAttacker}. Defence modifier: ${randomModifierDefender}. 
                  Hit: ${toHitChance}. Defend: ${toDefendChance}`);
 
     return toHitChance > toDefendChance;
@@ -530,7 +576,6 @@ function calculateDamage(weaponDamage, char1Strength) {
   
 // NAVIGATING THE UI
 charSheetButton.addEventListener('click', () => {
-    console.log(playerStats)
     displayStats(playerStats)
 });
 
@@ -540,12 +585,30 @@ equipmentButton.addEventListener('click', () =>
 
 // EQUIPMENT TABLES
 let playerEquipment = {
-    Head: 'Bronze cap',
-    Torso: leatherArmour,
-    Legs: 'Nothing!',
-    Feet: 'Sandals',
-    Weapon: bronzeShortsword,
-    Offhand: 'Leather buckler'
+    Head: [
+        bronzeCap.name,
+        bronzeCap.protection
+    ],
+    Torso: [
+        leatherArmour.name,
+        leatherArmour.protection
+    ],
+    Legs: [
+        'Nothing!',
+        0
+    ],
+    Feet: [
+        'Sandals',
+        0
+    ],
+    Weapon: [
+        bronzeShortsword.name,
+        bronzeShortsword.damage
+    ], 
+    Offhand: [
+        leatherBuckler.name,
+        leatherBuckler.protection
+    ] 
 }
 
 // UI DISPLAY FUNCTIONS
@@ -558,7 +621,6 @@ function displayStats(object) {
         const statLine = document.createElement('p');
         statLine.textContent = `${stat}: ${value}`;
         statsList.appendChild(statLine);
-        console.log(stat, value)
     }
     
     gameMenuDisplay.appendChild(statsList);
@@ -580,7 +642,7 @@ function displayEquipment(object) {
 
     for (const [equipment, value] of Object.entries(object)) {
         const equipmentLine = document.createElement('p');
-        equipmentLine.textContent = `${equipment}: ${value}`;
+        equipmentLine.textContent = `${equipment}: ${value[0]}`;
         equipmentList.appendChild(equipmentLine);
     }
 

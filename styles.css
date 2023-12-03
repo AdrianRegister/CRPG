@@ -107,7 +107,7 @@ button:hover {
 
 #to-next-fight {
     position: relative;
-    top: 300px;
+    top: auto;
     margin-left: auto;
     margin-right: auto;
     background-color: red;
