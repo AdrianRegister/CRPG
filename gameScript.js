@@ -482,6 +482,7 @@ function battle() {
         gameState += 1
         playerStats.Money += 10 * (enemy.level + 0.2)
         playerStats.Experience += 100 * (enemy.level + 0.2)
+        displayStats(playerStats)
         displayHub();
     });
 }
