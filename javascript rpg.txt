@@ -47,7 +47,7 @@ create hub areas. flavour text for each area. AREAS DONE. TODO - TAVERN (buy dri
 start implementing combat system. attack / defend / feint, each with a percentage chance of success calculated by checking player's 	strength / defense / dexterity against opponent's. DONE
 	attack = dexterity vs dexterity. attacks normally. roll for hit and apply damage. DONE
 	defend = defence vs dexterity. doesn't attack. if successful, recovers a bit of health. IGNORE FOR NOW
-	feint = dexterity vs dexterity. if successful, adds a modifier to next attack. IGNORE FOR NOW
+	feint = dexterity vs dexterity. if successful, adds a modifier to next attack (critical hit?). IGNORE FOR NOW
 
 	formula to determine successful action:
 	number1 = random_number(1, 23)
@@ -61,6 +61,6 @@ start implementing combat system. attack / defend / feint, each with a percentag
 	random_modifier = random_number(1, 20)
 	damage = (strength + random_modifier)	DONE
 
-add equipment. use tiers bronze > iron > steel > legendary
+add equipment. use tiers bronze > iron > steel > legendary BRONZE GEAR ADDED.
 
-implement training points and training pit area functionality
+implement training points (grant xp with a risk of injury per point?) and training pit area functionality. 

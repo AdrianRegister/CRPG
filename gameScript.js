@@ -47,7 +47,9 @@ let gameState = 1; // This indicates the progress through the game. After each f
                    // At this point, training points will be refreshed to 3 and player money and experience assigned. The gamestate
                    // will also control various flavour texts and rare item drop chance.
 let playerXP = 0
-let playerMoney = 15                  
+let playerMoney = 15             
+
+let isDrunk = false // this will lower all your combat stats by 2!
 
 // CHARACTER AND NPC CLASSES
 let playerStats = {
@@ -67,7 +69,7 @@ const fighterClasses = [
         Dexterity: 6,
         Defense: 6,
         Kills: 0,
-        Money: playerMoney,
+        Sesterces: playerMoney,
         Experience: playerXP
     },
     {
@@ -78,7 +80,7 @@ const fighterClasses = [
         Dexterity: 5,
         Defense: 5,
         Kills: 0,
-        Money: playerMoney,
+        Sesterces: playerMoney,
         Experience: playerXP
     },
     {
@@ -89,7 +91,7 @@ const fighterClasses = [
         Dexterity: 5,
         Defense: 10,
         Kills: 0,
-        Money: playerMoney,
+        Sesterces: playerMoney,
         Experience: playerXP
     }
 ];
@@ -184,6 +186,20 @@ const leatherBuckler = new Armour(
     1,
     5,
     "A circle of wood reinforced with boiled leather strips. It doesn't smell very good."
+)
+
+const ironShortsword = new Weapon(
+    'Iron shortsword',
+    damage = Array.from(Array(13).keys()).slice(1),
+    20,
+    "A solid, standard-issue weapon. Both legionaries and gladiators have found it to be just as effective in war as in the arena."
+)
+
+const ironArmour = new Armour(
+    'Iron chestplate',
+    3, 
+    25,
+    "Basic but reliable body armour. This can deflect both cuts and thrusts, making it an excellent choice in combat."
 )
 
 // NAMES
@@ -437,6 +453,13 @@ function battle() {
     opponentBattleText.innerHTML = 'Your opponent watches you carefully.';
     let playerTurn = true;
 
+    if (isDrunk) {
+        playerStats.Strength -= 1
+        playerStats.Dexterity -= 1
+        playerStats.Defense -= 1
+        displayStats(playerStats)
+    }
+
     attackButton.addEventListener('click', () => {
         battleText.classList.add('expanded');
         setTimeout(function() {
@@ -526,8 +549,14 @@ function battle() {
         innerGameWindow.removeChild(opponentBattleText);
 
         gameState += 1
-        playerStats.Money += 10 * (enemy.level + 0.2)
+        playerStats.Sesterces += 10 * (enemy.level + 0.2)
         playerStats.Experience += 100 * (enemy.level + 0.2)
+        if (isDrunk) {
+            playerStats.Strength += 1
+            playerStats.Dexterity += 1
+            playerStats.Defense += 1
+        }
+        isDrunk = false
         displayStats(playerStats)
         displayHub();
     });
@@ -587,27 +616,39 @@ equipmentButton.addEventListener('click', () =>
 let playerEquipment = {
     Head: [
         bronzeCap.name,
-        bronzeCap.protection
+        bronzeCap.protection,
+        bronzeCap.description,
+        bronzeCap.value
     ],
     Torso: [
         leatherArmour.name,
-        leatherArmour.protection
+        leatherArmour.protection,
+        leatherArmour.description,
+        leatherArmour.value
     ],
     Legs: [
         'Nothing!',
+        0,
+        'Try to keep this body part away from sharp objects!',
         0
     ],
     Feet: [
         'Sandals',
+        0,
+        'Try to keep this body part away from sharp objects!',
         0
     ],
     Weapon: [
         bronzeShortsword.name,
-        bronzeShortsword.damage
+        bronzeShortsword.damage,
+        bronzeShortsword.description,
+        bronzeShortsword.value
     ], 
     Offhand: [
         leatherBuckler.name,
-        leatherBuckler.protection
+        leatherBuckler.protection,
+        leatherBuckler.description,
+        leatherBuckler.value
     ] 
 }
 
@@ -641,15 +682,28 @@ function displayEquipment(object) {
     const equipmentList = document.createElement('div');
 
     for (const [equipment, value] of Object.entries(object)) {
-        const equipmentLine = document.createElement('p');
+        const equipmentLine = document.createElement('p')
+        equipmentLine.setAttribute('class', 'equipment-line');
         equipmentLine.textContent = `${equipment}: ${value[0]}`;
         equipmentList.appendChild(equipmentLine);
+
+        const equipmentInfo = document.createElement('p')
+        equipmentInfo.setAttribute('class', 'item-info-span')
+        equipmentInfo.textContent += value[2]
+        equipmentList.appendChild(equipmentInfo)
     }
 
     gameMenuDisplay.appendChild(equipmentList);
 }
 
 function displayHub() {
+    if (isDrunk) {
+        tavernButton.textContent = 'You are unwelcome in the tavern.'
+        tavernButton.disabled = true
+    } else {
+        tavernButton.textContent = 'Tavern'
+        tavernButton.disabled = false
+    }
     hubNav.appendChild(tavernButton);
     hubNav.appendChild(trainingPitButton);
     hubNav.appendChild(infirmaryButton);
@@ -663,14 +717,73 @@ function displayHub() {
 }
 
 function displayTavern() {
+    const tavernDiv = document.createElement('div')
+    const drinkButton = document.createElement('button')
+    const brawlButton = document.createElement('button')
+    tavernDiv.appendChild(drinkButton)
+    tavernDiv.appendChild(brawlButton)
+    innerGameWindow.appendChild(tavernDiv)
+    innerGameWindow.appendChild(backButton);
+
+    let drinkCount = 0
+
+    drinkButton.textContent = ''
+    brawlButton.textContent = ''
+    
     toNextFightButton.style.display = 'none';
     hubNav.innerHTML = '';
     textWindow.style.border = '';
     textWindow.innerHTML = `Beneath weathered stone arches, the entrance to the tavern beckons with the aroma of spiced wines and the murmur of animated chatter. Torchlight flickers on mosaic-laden walls depicting gladiatorial feats, while worn wooden tables groan under the weight of goblets and platters. Sweating patrons, packed in around the tables, clink vessels in jovial toasts as the distant roars of the arena's spectators add a rhythmic backdrop. The air hums with the stories of victorious warriors, shared over mugs of wine. The clinking of denarii being passed over the bar for drinks and bets on the gladiators punctuates the hubbub.`
+    drinkButton.textContent = 'Buy a drink (2 sesterces)'
+    brawlButton.textContent = 'Start a brawl!'
 
-    innerGameWindow.appendChild(backButton);
+    const drinkingBuddyRace = [
+        'Phoenician',
+        'Nubian',
+        'Gaulish',
+        'Greek',
+        'Roman',
+        'Sardinian',
+    ]
+
+    const drinkingBuddyJob = [
+        'stonemason',
+        'mercenary',
+        'trader',
+        'leatherworker',
+        'blacksmith',
+        'butcher'
+    ]
+
+    let drinkingText = `<br><br>You are having a wonderful time! You have already had several enjoyable conversations with your fellow drinkers, and have sworn lifelong friendship with a :INSERT RACE: :INSERT JOB:. You are certain that your new best friend will pay for your next drink. Unfortunately, he is not so sure.`
+    drinkingText = drinkingText.replace(':INSERT RACE:', randomValueFromArray(drinkingBuddyRace))     
+    drinkingText = drinkingText.replace(':INSERT JOB:', randomValueFromArray(drinkingBuddyJob))     
+
+    drinkButton.addEventListener('click', () => {
+        if (playerStats.Sesterces > 2) {
+            textWindow.innerHTML = `You approach the bar and motion towards the heavy oak cask fixed to the wall behind the barman. He unhooks a dirty pewter mug from the bar and fills it with thin, watery wine. "That'll be two sesterces", he mutters. You take the mug and knock it back, barely noticing the acrid, metallic taste. You do, however, notice the lovely effect it has on you after a few minutes. Life is good!`
+            playerStats.Sesterces -= 2
+            drinkCount++
+            if (drinkCount > 2) {
+                textWindow.innerHTML += drinkingText
+            }
+            if (drinkCount === 5) {
+                textWindow.innerHTML = `The hours have passed quickly, and your memory is a blur. You have been amusing yourself by loudly going through your repertoire of bawdy songs and offensive jokes. Judging from the dark glares of the other patrons as you stagger around the small tavern, your performance has not been the most enjoyable.<br><br>Finally, they have had enough. A crowd of burly young men approach you and rock your head back with some well-placed, solid punches. Even in your addled state, the pain comes through and makes you grunt and moan. Then, dragging you by your armpits, the men take you to the entrance and hurl you face-first into the piss and muddy straw outside the tavern amidst loud cheers.<br><br>You are drunk! You will suffer a -1 penalty to all of your combat stats in the next fight!`
+                playerStats.Health -= 5
+                displayStats(playerStats)
+                isDrunk = true
+                tavernDiv.removeChild(drinkButton)
+                tavernDiv.removeChild(brawlButton)
+            }
+        } else {
+            textWindow.innerHTML = `"Why don't you come back when you have the money!" grunts the barman. "I don't run a bloody charity."`
+        }
+        
+        displayStats(playerStats)
+    })
 
     backButton.addEventListener('click', () => {
+        innerGameWindow.removeChild(tavernDiv)
         innerGameWindow.removeChild(backButton);
         textWindow.style.border = 'none';
         textWindow.innerHTML = '';
