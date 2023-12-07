@@ -42,7 +42,7 @@ create Enemy class + constructor. populate enemy window with generated Enemy ins
 
 add buttons to show enemy stats and equipment. add a 'hub' to the main window. add hub buttons for different areas eg tavern, training pit, quartermaster, infirmary. add big button at bottom - 'next fight' DONE
 
-create hub areas. flavour text for each area. AREAS DONE. TODO - TAVERN (buy drink, start brawl)
+create hub areas. flavour text for each area. AREAS DONE. TODO - TAVERN (start brawl) IMPLEMENT DEATH IF THROWN OUT WITH < 5 HEALTH
 
 start implementing combat system. attack / defend / feint, each with a percentage chance of success calculated by checking player's 	strength / defense / dexterity against opponent's. DONE
 	attack = dexterity vs dexterity. attacks normally. roll for hit and apply damage. DONE
@@ -61,6 +61,8 @@ start implementing combat system. attack / defend / feint, each with a percentag
 	random_modifier = random_number(1, 20)
 	damage = (strength + random_modifier)	DONE
 
-add equipment. use tiers bronze > iron > steel > legendary BRONZE GEAR ADDED.
+add equipment. use tiers bronze > iron > steel > legendary BRONZE GEAR ADDED. TWO IRON ITEMS ADDED.
+
+add more combat flavour text.
 
 implement training points (grant xp with a risk of injury per point?) and training pit area functionality. 

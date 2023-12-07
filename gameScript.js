@@ -50,6 +50,9 @@ let playerXP = 0
 let playerMoney = 15             
 
 let isDrunk = false // this will lower all your combat stats by 2!
+let isConfident = false
+let isHumbled = false
+let brawlUnresolved = false
 
 // CHARACTER AND NPC CLASSES
 let playerStats = {
@@ -420,6 +423,16 @@ function battle() {
     textWindow.style.border = '';
     textWindow.innerHTML = `Your opponent, ${enemy.name}, stands across the sand from you. Like you, he is a fellow recruit, and this is his first fight.<br><br>He seems nervous, and clenches his weapon tightly. You both slowly circle each other, neither of you willing to overly commit. The early afternoon sun hangs high above. The arena stands are mostly empty - there are not many people interested in seeing two novices fight.<br><br>Your mouth is dry and your heart is beating painfully against your ribcage as you take one, then two, then three steps towards your opponent. Raising his shield to meet your tentative charge, the duel begins!`;
 
+    if (isDrunk) {
+        textWindow.innerHTML += "<br><br>You are still feeling the effects from the night before. A fight to the death is not something that should be done while nursing a monster hangover. Yet, here you are."
+    }
+    if (isConfident) {
+        textWindow.innerHTML += `<br><br>After the previous night's extracurricular activities, you feel like you could fight two opponents at once!`
+    }
+    if (isHumbled) {
+        textWindow.innerHTML += `<br><br>After the beating you took at the tavern last night, you feel somewhat demoralised. You fervently hope your opponent is also feeling the same.`
+    }
+
     // CREATES BATTLE UI ELEMENTS
     const battleNav = document.createElement('div');
     battleNav.setAttribute('class', 'battle-nav-container');
@@ -453,10 +466,16 @@ function battle() {
     opponentBattleText.innerHTML = 'Your opponent watches you carefully.';
     let playerTurn = true;
 
-    if (isDrunk) {
+    if (isDrunk || isHumbled) {
         playerStats.Strength -= 1
         playerStats.Dexterity -= 1
         playerStats.Defense -= 1
+        displayStats(playerStats)
+    }
+    if (isConfident) {
+        playerStats.Strength += 1
+        playerStats.Dexterity += 1
+        playerStats.Defense += 1
         displayStats(playerStats)
     }
 
@@ -484,7 +503,7 @@ function battle() {
             enemyAlive = false;
             enemy.enemyStats.Health = 'Dead!';
             battleText.innerHTML += ` ${enemy.name} staggers backwards, blood pouring from his wounds. You step forward and deliver the death blow!`;
-            battleText.innerHTML += '<br><br>Your foe crumples to the ground and lies motionless, his blood streaming into the sand beneath. The handful of spectators mutter among themselves. Some of them clap, the sound echoing hollowly around the sparsely-populated arena. As the rush of survival floods your body, your ragged breathing slowly begins returning to normal. You have survived your first fight! You stand victorious!';
+            battleText.innerHTML += '<br><br>Your foe crumples to the ground and lies motionless, his blood streaming into the sand beneath. The handful of spectators mutter among themselves. Some of them clap, the sound echoing hollowly around the sparsely-populated arena. As the rush of survival floods your body, your ragged breathing slowly returns to normal. You have survived your first fight! You stand victorious!';
             battleNav.parentElement.removeChild(battleNav);
             opponentBattleText.innerHTML = '';
             opponentBattleText.style.border = 'none';
@@ -528,7 +547,7 @@ function battle() {
                 opponentBattleText.style.border = 'none';
                 playerAlive = false;
                 playerStats.Health = 'Dead!';
-                battleText.innerHTML += `Your vision darkens as pain overwhelms you. Your strength is deserting you and you drop to one knee, your weapon clanging to the ground. Your opponent stands above you. He raises his arm one last time.`;
+                battleText.innerHTML += `<br><br>You are exhausted. You are too slow to defend your opponent's next attack!<br><br>Your vision darkens as pain overwhelms you. Your strength is deserting you and you drop to one knee, your weapon clanging to the ground. Your opponent stands above you. He raises his arm one last time.`;
                 battleText.innerHTML += '<br><br>' + `${enemy.name}'s blow knocks you fully to the ground and your face hits the dirt. Your senses quickly begin to fail. The noise of the arena fades and is replaced by a gentle ringing. Mercifully, the pain also begins to ebb. You do not even notice how warm and wet the sand beneath you has become, saturated as it is with your blood. You let out one final weak, rasping breath and lie still. The world vanishes.`;
                 battleText.innerHTML += '<br><br>You are dead!';
                 battleNav.parentElement.removeChild(battleNav);
@@ -551,12 +570,22 @@ function battle() {
         gameState += 1
         playerStats.Sesterces += 10 * (enemy.level + 0.2)
         playerStats.Experience += 100 * (enemy.level + 0.2)
-        if (isDrunk) {
+
+        if (isDrunk || isHumbled) {
             playerStats.Strength += 1
             playerStats.Dexterity += 1
             playerStats.Defense += 1
         }
+        if (isConfident) {
+            playerStats.Strength -= 1
+            playerStats.Dexterity -= 1
+            playerStats.Defense -= 1
+        }
+
         isDrunk = false
+        isConfident = false
+        isHumbled = false
+        brawlUnresolved = false
         displayStats(playerStats)
         displayHub();
     });
@@ -697,7 +726,7 @@ function displayEquipment(object) {
 }
 
 function displayHub() {
-    if (isDrunk) {
+    if (isDrunk || brawlUnresolved) {
         tavernButton.textContent = 'You are unwelcome in the tavern.'
         tavernButton.disabled = true
     } else {
@@ -740,10 +769,11 @@ function displayTavern() {
     const drinkingBuddyRace = [
         'Phoenician',
         'Nubian',
-        'Gaulish',
+        'Gaul',
         'Greek',
         'Roman',
         'Sardinian',
+        'Briton'
     ]
 
     const drinkingBuddyJob = [
@@ -752,10 +782,11 @@ function displayTavern() {
         'trader',
         'leatherworker',
         'blacksmith',
-        'butcher'
+        'carpenter',
+        'gladiator'
     ]
 
-    let drinkingText = `<br><br>You are having a wonderful time! You have already had several enjoyable conversations with your fellow drinkers, and have sworn lifelong friendship with a :INSERT RACE: :INSERT JOB:. You are certain that your new best friend will pay for your next drink. Unfortunately, he is not so sure.`
+    let drinkingText = `<br><br>You are having a wonderful time! You have already had several enjoyable conversations with your fellow drinkers, and have sworn lifelong friendship with a :INSERT RACE: :INSERT JOB:. You are certain that your new best friend will pay for your next drink. However, when you look around for him a few minutes later, he is nowhere to be seen.`
     drinkingText = drinkingText.replace(':INSERT RACE:', randomValueFromArray(drinkingBuddyRace))     
     drinkingText = drinkingText.replace(':INSERT JOB:', randomValueFromArray(drinkingBuddyJob))     
 
@@ -768,7 +799,7 @@ function displayTavern() {
                 textWindow.innerHTML += drinkingText
             }
             if (drinkCount === 5) {
-                textWindow.innerHTML = `The hours have passed quickly, and your memory is a blur. You have been amusing yourself by loudly going through your repertoire of bawdy songs and offensive jokes. Judging from the dark glares of the other patrons as you stagger around the small tavern, your performance has not been the most enjoyable.<br><br>Finally, they have had enough. A crowd of burly young men approach you and rock your head back with some well-placed, solid punches. Even in your addled state, the pain comes through and makes you grunt and moan. Then, dragging you by your armpits, the men take you to the entrance and hurl you face-first into the piss and muddy straw outside the tavern amidst loud cheers.<br><br>You are drunk! You will suffer a -1 penalty to all of your combat stats in the next fight!`
+                textWindow.innerHTML = `The hours have passed quickly, and your memory is a blur. You have been amusing yourself by loudly going through your repertoire of bawdy songs and offensive jokes. Judging from the dark glares of the other patrons as you stagger around the small tavern, your performance has gone unappreciated.<br><br>Finally, they have had enough. A crowd of burly young men approach you and rock your head back with some well-placed, solid punches. Even in your addled state, the pain comes through and makes you grunt and moan. Then, dragging you by your armpits, the men take you to the entrance and hurl you face-first into the piss and muddy straw outside the tavern amidst loud cheers.<br><br>You are drunk! You will suffer a -1 penalty to all of your combat stats in the next fight!`
                 playerStats.Health -= 5
                 displayStats(playerStats)
                 isDrunk = true
@@ -780,6 +811,91 @@ function displayTavern() {
         }
         
         displayStats(playerStats)
+    })
+
+    let brawlText = `You can't quite recall how it started. An insult here, a shove there. An argument over a spilled drink. Or was it because you accused that shit-for-brains :INSERT RACE: of prostituting himself to other men?<br><br>Whatever the reason, it hardly matters now. All you know is that you have some very drunk, very angry patrons in your face. Ducking under the first punch, you grab the nearest barstool and hold it like a spear in front of you, creating some distance between you and your asssailants.`
+    brawlText = brawlText.replace(':INSERT RACE:', randomValueFromArray(drinkingBuddyRace))
+
+    brawlButton.addEventListener('click', () => {
+        tavernDiv.removeChild(drinkButton)
+        tavernDiv.removeChild(brawlButton)
+        innerGameWindow.removeChild(backButton)
+        textWindow.innerHTML = brawlText
+        const brawlAttackButton = document.createElement('button')
+        const brawlEscapeButton = document.createElement('button')
+        const brawlDefuseButton = document.createElement('button')
+        brawlAttackButton.textContent = 'Get stuck in!'
+        brawlEscapeButton.textContent = 'Try to escape!'
+        brawlDefuseButton.textContent = 'Attempt to defuse the situation!'
+        tavernDiv.appendChild(brawlAttackButton)
+        tavernDiv.appendChild(brawlEscapeButton)
+        tavernDiv.appendChild(brawlDefuseButton)
+
+        let barBrawlRoundCounter = 1 // when this reaches 3, end the brawl.
+        let kickingAssCounter = 0 // this can reach a maximum of 2. Each point provides a 'confident' modifier of +0.5 to your stats for the next arena fight.
+        let thisWasABadIdeaCounter = 0 // this can reach a maximum of 2. Each point provides a 'humbled' modifier of -0.5 to your stats for the next arena fight.
+        let finalBrawlCounter = 0
+
+        brawlAttackButton.addEventListener('click', () => {
+            console.log(barBrawlRoundCounter, kickingAssCounter, thisWasABadIdeaCounter)
+            if (barBrawlRoundCounter < 3) {
+                if (randomNumber(1, 100) >= 50) { // if hit!
+                    console.log('hit!')
+                    if (barBrawlRoundCounter === 1) {
+                        textWindow.innerHTML = `With a lusty roar, you swing the barstool over your head and bring it crashing down onto the closest attacker! He immediatedly crumbles, blood pouring from a deep cut on the side of his head. His friend approaches from the side...`                         
+                        kickingAssCounter++
+                    } else if (barBrawlRoundCounter === 2 && kickingAssCounter !== 0) {
+                        textWindow.innerHTML = `You see him coming the entire way. You decide to anticipate his attack, rushing him and pinning him to the floor. You deflect his flailing blows and drop your elbow directly onto his nose! `
+                        textWindow.innerHTML += `The remaining attacker totally loses his nerve in the face of your masterful display of improvisational alcohol-fuelled combat. Backing away, he turns and flees!<br><br>Your laughter accompanies him out the door. Turning around, you are pleasantly surprised to see several cheering patrons offering to pay for your next round.<br><br>You feel invincible! You have gained a +1 bonus to your combat stats for the next arena fight!`
+                        tavernDiv.removeChild(brawlAttackButton)
+                        tavernDiv.removeChild(brawlEscapeButton)
+                        tavernDiv.removeChild(brawlDefuseButton)
+                        tavernDiv.appendChild(drinkButton)
+                        innerGameWindow.appendChild(backButton)
+                        kickingAssCounter++
+                    } else if (barBrawlRoundCounter === 2 && kickingAssCounter === 0) {
+                        textWindow.innerHTML = `Suddenly, there is a loud crashing sound from the tavern entrace. A patrol of Vigiles, Rome's militia lawkeepers, burst through the door.<br><br>They quickly identify you and your erstwhile drinking partners as the troublemakers, and frog-march you outside. You are all given a stern warning to not return to the tavern under pain of imprisonment. Grumbling to yourselves, you grudgingly shake hands and go on your way.`
+                        brawlUnresolved = true
+                        tavernDiv.removeChild(brawlAttackButton)
+                        tavernDiv.removeChild(brawlEscapeButton)
+                        tavernDiv.removeChild(brawlDefuseButton)
+                        innerGameWindow.appendChild(backButton)
+                    }
+                } else { // if miss!
+                    console.log('miss!')
+                    if (barBrawlRoundCounter === 1) {
+                        thisWasABadIdeaCounter++
+                        textWindow.innerHTML = `With a lusty roar, you swing the barstool over your head and bring it crashing down onto the closest attacker!<br><br>Or, at least, that was the plan. Your opponent moves much faster than you had anticipated. By the time your makeshift weapon thumps onto the dirty tavern floor, he has already moved around you to deliver a clubbing blow to your ribs!<br><br>You stagger sideways and take a step back. This may have been a bad idea...`                  
+                        playerStats.Health -= 2
+                        displayStats(playerStats) 
+                    } else if (barBrawlRoundCounter === 2 && thisWasABadIdeaCounter !== 0) {
+                        textWindow.innerHTML = `You are still reeling from the previous blow as the second hits you square in the mouth. Spitting blood, you collapse backwards over someone's leg and land in a heap on the floor. You hold your hands up in surrender.<br><br>The brawlers gather around you, jeering and spitting on you. They then grab you by your legs and unceremoniously fling you out of the tavern into a filthy alleyway.<br><br>This was a humiliating experience. You will suffer -1 to your combat stats for the next arena fight!`
+                        playerStats.Health -= 2
+                        displayStats(playerStats) 
+                        tavernDiv.removeChild(brawlAttackButton)
+                        tavernDiv.removeChild(brawlEscapeButton)
+                        tavernDiv.removeChild(brawlDefuseButton)
+                        innerGameWindow.appendChild(backButton)
+                        thisWasABadIdeaCounter++
+                    } else if (barBrawlRoundCounter === 2 && thisWasABadIdeaCounter === 0) {
+                        textWindow.innerHTML = `Suddenly, there is a loud crashing sound from the tavern entrace. A patrol of Vigiles, Rome's militia lawkeepers, burst through the door.<br><br>They quickly identify you and your erstwhile drinking partners as the troublemakers, and frog-march you outside. You are all given a stern warning to not return to the tavern under pain of imprisonment. Grumbling to yourselves, you grudgingly shake hands and go on your way.`
+                        brawlUnresolved = true
+                        tavernDiv.removeChild(brawlAttackButton)
+                        tavernDiv.removeChild(brawlEscapeButton)
+                        tavernDiv.removeChild(brawlDefuseButton)
+                        innerGameWindow.appendChild(backButton)
+                    }
+                }
+                barBrawlRoundCounter++    
+            }
+            finalBrawlCounter = kickingAssCounter - thisWasABadIdeaCounter
+            if (finalBrawlCounter === 2) {
+                isConfident = true
+            } else if (finalBrawlCounter === -2) {
+                isHumbled = true
+            }
+            console.log('final brawl count: ' + finalBrawlCounter)
+        })
     })
 
     backButton.addEventListener('click', () => {
