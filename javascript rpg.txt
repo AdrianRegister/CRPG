@@ -26,7 +26,7 @@ keep track of lifetime stats - total kills, damage dealt, damage received, etc K
 
 HUMANS objects - person (name, class, level, stats, equipment)
 		>> enemy types(inherit from person) 		DONE
-EQUIPMENT objects - gear (attack, defense, dexterity)		DONE, BUT MORE ITEMS YET TO BE CREATED
+EQUIPMENT objects - gear (attack, defense, dexterity)		DONE
 		>> weapon types(inherit)
 		armor types(inherit)
 
@@ -41,8 +41,6 @@ TODO - newgame function = click newgame button > empties innerHTML of main div. 
 create Enemy class + constructor. populate enemy window with generated Enemy instance. Use random numbers to choose class and stats of enemy. DONE
 
 add buttons to show enemy stats and equipment. add a 'hub' to the main window. add hub buttons for different areas eg tavern, training pit, quartermaster, infirmary. add big button at bottom - 'next fight' DONE
-
-create hub areas. flavour text for each area. AREAS DONE. TODO - TAVERN (start brawl) IMPLEMENT DEATH IF THROWN OUT WITH < 5 HEALTH
 
 start implementing combat system. attack / defend / feint, each with a percentage chance of success calculated by checking player's 	strength / defense / dexterity against opponent's. DONE
 	attack = dexterity vs dexterity. attacks normally. roll for hit and apply damage. DONE
@@ -61,8 +59,11 @@ start implementing combat system. attack / defend / feint, each with a percentag
 	random_modifier = random_number(1, 20)
 	damage = (strength + random_modifier)	DONE
 
-add equipment. use tiers bronze > iron > steel > legendary BRONZE GEAR ADDED. TWO IRON ITEMS ADDED.
+add equipment. use tiers bronze > iron > steel > legendary BRONZE + IRON GEAR ADDED.
 
-add more combat flavour text.
+add more combat flavour text. DONE
 
-implement training points (grant xp with a risk of injury per point?) and training pit area functionality. 
+create hub areas. flavour text for each area. AREAS, TAVERN DONE. TODO - TRAINING PIT (training functionality)
+implement training points (grant xp with a risk of injury per point?) and training pit area functionality. UP NEXT
+
+implement critical hit to combat = randomnumber(1, 100). if num < 5 (5% chance), critical hit = true. stats/weapons will modify this % chance. critical hit deals damage + maximum weapon damage value. add flavour text for critical hits.

@@ -49,9 +49,9 @@ let gameState = 1; // This indicates the progress through the game. After each f
 let playerXP = 0
 let playerMoney = 15             
 
-let isDrunk = false // this will lower all your combat stats by 2!
-let isConfident = false
-let isHumbled = false
+let isDrunk = false // this will lower all your combat stats by 1!
+let isConfident = false // this will raise all your combat stats by 1!
+let isHumbled = false // this will lower all your combat stats by 1!
 let brawlUnresolved = false
 
 // CHARACTER AND NPC CLASSES
@@ -194,74 +194,42 @@ const leatherBuckler = new Armour(
 const ironShortsword = new Weapon(
     'Iron shortsword',
     damage = Array.from(Array(13).keys()).slice(1),
-    20,
-    "A solid, standard-issue weapon. Both legionaries and gladiators have found it to be just as effective in war as in the arena."
+    50,
+    "A solid, standard-issue weapon. Both legionaries and gladiators have found it to be equally as effective in war as in the arena."
 )
 
 const ironArmour = new Armour(
     'Iron chestplate',
     3, 
-    25,
+    75,
     "Basic but reliable body armour. This can deflect both cuts and thrusts, making it an excellent choice in combat."
+)
+
+const ironHelmet = new Armour(
+    'Iron helmet',
+    2,
+    50,
+    "A stout, standard-issue iron helmet. Widely used across the Empire."
+)
+
+const ironShield = new Armour(
+    'Iron shield',
+    3,
+    60,
+    "This strong wooden shield is reinforced with iron bands crossing the centre."
 )
 
 // NAMES
 const firstNames = [
-    "Lucius",
-    "Marcus",
-    "Titus",
-    "Gaius",
-    "Quintus",
-    "Septimus",
-    "Cassius",
-    "Amulius",
-    "Cornelius",
-    "Felix",
-    "Valerius",
-    "Marcellus",
-    "Publius",
-    "Gallio",
-    "Caius",
-    "Fabius",
-    "Aulus",
-    "Horatius",
-    "Tiberius",
-    "Flavius",
-    "Vitruvius",
-    "Gnaeus",
-    "Decius",
-    "Kaeso",
-    "Manius",
-    "Spurius"
+    "Lucius", "Marcus", "Titus", "Gaius", "Quintus", "Septimus", "Cassius", "Amulius", "Cornelius", "Felix", "Valerius",
+    "Marcellus", "Publius", "Gallio", "Caius", "Fabius", "Aulus", "Horatius", "Tiberius", "Flavius", "Vitruvius", "Gnaeus",
+    "Decius", "Kaeso", "Manius", "Spurius"
 ];
 
 const lastNames = [
-    "Tullius",
-    "Flavius",
-    "Plinius",
-    "Valerius",
-    "Cassius",
-    "Gabinnius",
-    "Vitruvius",
-    "Cosconius",
-    "Marcellus",
-    "Dillius",
-    "Crispus",
-    "Nerva",
-    "Aelianus",
-    "Corvinus",
-    "Quirinus",
-    "Capitolinus",
-    "Tribonianus",
-    "Priscianus",
-    "Severus",
-    "Marianus",
-    "Plautus",
-    "Viator",
-    "Papus",
-    "Licinianus",
-    "Julius",
-    "Drusus"
+    "Tullius", "Flavius", "Plinius", "Valerius", "Cassius", "Gabinnius", "Vitruvius", "Cosconius", "Marcellus", "Dillius",
+    "Crispus", "Nerva", "Aelianus", "Corvinus", "Quirinus", "Capitolinus", "Tribonianus", "Priscianus", "Severus", "Marianus",
+    "Plautus", "Viator", "Papus", "Licinianus","Julius", "Drusus"
 ];
 
 // GAME FLOW --------->
@@ -340,7 +308,7 @@ function newGame() {
         innerGameWindow.style.border = '';
         innerGameWindow.innerHTML = '';
 
-        textWindow.innerHTML = `In the dim-lit armory, the air hung heavy with the scent of oiled leather and anticipation. You are a new gladiator, a raw recruit with fire in your eyes, standing amidst a sea of dulled weaponry and battered, blood-stained armor. The arena blacksmiths, sweat pouring from their brows, unceremoniously pick out some of the more battle-worn pieces and toss them towards you. You try on an ill-fitting, matted leather breastplate and tie the straps tight around your shoulders. The clang of metal meeting metal echoes throughout the humid forge as a smith hands you an old bronze shortsword, its edge barely sharp enough to cut bread. A thin bronze cap is shoved onto your head as he gestures towards the leather shields hanging from the wall, signalling that you should take one. <br><br>
+        textWindow.innerHTML = `In the dimly-lit armory, the air hangs heavy with the scent of oiled leather. You are a new gladiator, a raw recruit with fire in your eyes, standing amidst a sea of dulled weaponry and battered, blood-stained armor. The arena blacksmiths, sweat pouring from their brows, unceremoniously pick out some of the more battle-worn pieces and toss them towards you. You try on an ill-fitting, matted leather breastplate and tie the straps tight around your shoulders. The clang of metal meeting metal echoes throughout the humid forge as a smith hands you an old bronze shortsword, its edge barely sharp enough to cut bread. A thin bronze cap is shoved onto your head as he gestures towards the leather shields hanging from the wall, signalling that you should take one. <br><br>
         "Good enough", grunts the smith. "We've been getting through a lot of new fighters recently. I bet you won't make it to the end of the week. Try not to bleed too much on the gear. It's a pain to clean." <br><br>
         You push through the scrum of fellow recruits and head towards the door at the far end of the room. Your new gear will not protect you for long - for you to have any hope of victory, and the glory and denarii that will come with it, you will certainly need to train...` 
         
@@ -485,17 +453,38 @@ function battle() {
             battleText.classList.remove('expanded');
         }, 300);
 
-        battleText.innerHTML = 'You strike! ';
+        battleText.innerHTML = 'You strike!<br><br>';
         const hit = rollToHit(playerStats.Dexterity, enemy.enemyStats.Dexterity);
 
+        const playerHitText = [
+            "Your weapon passes your opponent's defenses! He gasps and clutches his side.",
+            "Your blow hits true! Your opponent grunts in pain and grits his teeth.",
+            "Your blade darts past your opponent's block! His eyes burn with pain as it bites."
+        ]
+        const playerMissText = [
+            "Your wild blow strikes thin air, your opponent having stepped out of the way just in time.",
+            "You overbalance slightly as you attack, your blade slicing nothing but empty air.",
+            "Your opponent smartly brings up his block and your weapon clatters harmlessly off his defenses."
+        ]
+        const enemyHitText = [
+            `Your opponent's strike hits home! You wince and gasp in pain. Your vision blurs and you take a step back out of harm's way.`,
+            "You do not see your opponent's strike coming until it is too late. You gasp as it cuts into you!",
+            "You try and deflect your opponent's attack but misjudge the distance. It evades your block and bites deep!"
+        ]
+        const enemyMissText = [
+            `Your opponent aims a blow in your direction, but his weapon passes harmlessly through the space you occupied only moments before.`,
+            "You smartly enter your block in time to negate your opponent's attack.",
+            "Anticipating your opponent's strike, you sway to the side as his blade cuts through empty air."
+        ]
+
         if (hit) {
-            battleText.innerHTML += 'Your blow hits true! Your opponent grunts in pain and grits his teeth.'
+            battleText.innerHTML += randomValueFromArray(playerHitText)
             const damage = calculateDamage(playerEquipment.Weapon[1], playerStats.Strength)
             enemy.enemyStats.Health -= damage;
             console.log('Hit!');
             console.log(`Damage: ${damage}. Enemy health: ${enemy.enemyStats.Health}`);
         } else {
-            battleText.innerHTML += 'Your wild blow strikes thin air, your opponent having stepped out of the way just in time.'
+            battleText.innerHTML += randomValueFromArray(playerMissText)
             console.log('Miss!');
         }
 
@@ -524,7 +513,7 @@ function battle() {
             }, 300);
     
             if (hit) {
-                opponentBattleText.innerHTML = `${enemy.name}'s strike hits home! You wince and gasp in pain. Your vision blurs and you take a step back out of harm's way.`;
+                opponentBattleText.innerHTML = randomValueFromArray(enemyHitText)
                 const damage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength)
                 const damageAfterArmour = damage - (
                     playerEquipment.Torso[1] + 
@@ -538,7 +527,7 @@ function battle() {
                 console.log('Opponent hits!');
                 console.log(`Damage: ${damageAfterArmour}. Your health: ${playerStats.Health}`);
             } else {
-                opponentBattleText.innerHTML = `${enemy.name} aims a blow in your direction, but his weapon passes harmlessly through the space you occupied only moments before.`;
+                opponentBattleText.innerHTML = randomValueFromArray(enemyMissText)
                 console.log('Opponent misses!');
             }
     
@@ -622,7 +611,7 @@ function rollToHit(char1Dexterity, char2Dexterity) {
     const toHitChance = char1Dexterity + randomModifierAttacker;
     const toDefendChance = char2Dexterity + randomModifierDefender;
     console.log(`Attack modifier: ${randomModifierAttacker}. Defence modifier: ${randomModifierDefender}. 
-                 Hit: ${toHitChance}. Defend: ${toDefendChance}`);
+        Hit: ${toHitChance}. Defend: ${toDefendChance}`);
 
     return toHitChance > toDefendChance;
 }
@@ -726,7 +715,7 @@ function displayEquipment(object) {
 }
 
 function displayHub() {
-    if (isDrunk || brawlUnresolved) {
+    if (isDrunk || brawlUnresolved || isConfident || isHumbled) {
         tavernButton.textContent = 'You are unwelcome in the tavern.'
         tavernButton.disabled = true
     } else {
@@ -762,28 +751,16 @@ function displayTavern() {
     toNextFightButton.style.display = 'none';
     hubNav.innerHTML = '';
     textWindow.style.border = '';
-    textWindow.innerHTML = `Beneath weathered stone arches, the entrance to the tavern beckons with the aroma of spiced wines and the murmur of animated chatter. Torchlight flickers on mosaic-laden walls depicting gladiatorial feats, while worn wooden tables groan under the weight of goblets and platters. Sweating patrons, packed in around the tables, clink vessels in jovial toasts as the distant roars of the arena's spectators add a rhythmic backdrop. The air hums with the stories of victorious warriors, shared over mugs of wine. The clinking of denarii being passed over the bar for drinks and bets on the gladiators punctuates the hubbub.`
+    textWindow.innerHTML = `Beneath weathered stone arches, the entrance to the tavern beckons with the aroma of spiced wines and the murmur of animated chatter. Torchlight flickers on mosaic-laden walls depicting gladiatorial feats, while worn wooden tables groan under the weight of goblets and platters. Sweating patrons, packed in around the tables, clink vessels in jovial toasts as the distant roars of the arena's spectators add a rhythmic backdrop. The air hums with the stories of victorious warriors, shared over mugs of wine. The clinking of sesterces being passed over the bar for drinks and bets on the gladiators punctuates the hubbub.`
     drinkButton.textContent = 'Buy a drink (2 sesterces)'
     brawlButton.textContent = 'Start a brawl!'
 
     const drinkingBuddyRace = [
-        'Phoenician',
-        'Nubian',
-        'Gaul',
-        'Greek',
-        'Roman',
-        'Sardinian',
-        'Briton'
+        'Phoenician', 'Nubian', 'Gaul', 'Greek', 'Roman', 'Sardinian', 'Briton'
     ]
 
     const drinkingBuddyJob = [
-        'stonemason',
-        'mercenary',
-        'trader',
-        'leatherworker',
-        'blacksmith',
-        'carpenter',
-        'gladiator'
+        'stonemason', 'mercenary', 'trader', 'leatherworker', 'blacksmith', 'carpenter', 'gladiator'
     ]
 
     let drinkingText = `<br><br>You are having a wonderful time! You have already had several enjoyable conversations with your fellow drinkers, and have sworn lifelong friendship with a :INSERT RACE: :INSERT JOB:. You are certain that your new best friend will pay for your next drink. However, when you look around for him a few minutes later, he is nowhere to be seen.`
@@ -822,14 +799,14 @@ function displayTavern() {
         innerGameWindow.removeChild(backButton)
         textWindow.innerHTML = brawlText
         const brawlAttackButton = document.createElement('button')
-        const brawlEscapeButton = document.createElement('button')
-        const brawlDefuseButton = document.createElement('button')
+        // const brawlEscapeButton = document.createElement('button')
+        // const brawlDefuseButton = document.createElement('button')
         brawlAttackButton.textContent = 'Get stuck in!'
-        brawlEscapeButton.textContent = 'Try to escape!'
-        brawlDefuseButton.textContent = 'Attempt to defuse the situation!'
+        // brawlEscapeButton.textContent = 'Try to escape!'
+        // brawlDefuseButton.textContent = 'Attempt to defuse the situation!'
         tavernDiv.appendChild(brawlAttackButton)
-        tavernDiv.appendChild(brawlEscapeButton)
-        tavernDiv.appendChild(brawlDefuseButton)
+        // tavernDiv.appendChild(brawlEscapeButton)
+        // tavernDiv.appendChild(brawlDefuseButton)
 
         let barBrawlRoundCounter = 1 // when this reaches 3, end the brawl.
         let kickingAssCounter = 0 // this can reach a maximum of 2. Each point provides a 'confident' modifier of +0.5 to your stats for the next arena fight.
@@ -848,8 +825,8 @@ function displayTavern() {
                         textWindow.innerHTML = `You see him coming the entire way. You decide to anticipate his attack, rushing him and pinning him to the floor. You deflect his flailing blows and drop your elbow directly onto his nose! `
                         textWindow.innerHTML += `The remaining attacker totally loses his nerve in the face of your masterful display of improvisational alcohol-fuelled combat. Backing away, he turns and flees!<br><br>Your laughter accompanies him out the door. Turning around, you are pleasantly surprised to see several cheering patrons offering to pay for your next round.<br><br>You feel invincible! You have gained a +1 bonus to your combat stats for the next arena fight!`
                         tavernDiv.removeChild(brawlAttackButton)
-                        tavernDiv.removeChild(brawlEscapeButton)
-                        tavernDiv.removeChild(brawlDefuseButton)
+                        // tavernDiv.removeChild(brawlEscapeButton)
+                        // tavernDiv.removeChild(brawlDefuseButton)
                         tavernDiv.appendChild(drinkButton)
                         innerGameWindow.appendChild(backButton)
                         kickingAssCounter++
@@ -857,8 +834,8 @@ function displayTavern() {
                         textWindow.innerHTML = `Suddenly, there is a loud crashing sound from the tavern entrace. A patrol of Vigiles, Rome's militia lawkeepers, burst through the door.<br><br>They quickly identify you and your erstwhile drinking partners as the troublemakers, and frog-march you outside. You are all given a stern warning to not return to the tavern under pain of imprisonment. Grumbling to yourselves, you grudgingly shake hands and go on your way.`
                         brawlUnresolved = true
                         tavernDiv.removeChild(brawlAttackButton)
-                        tavernDiv.removeChild(brawlEscapeButton)
-                        tavernDiv.removeChild(brawlDefuseButton)
+                        // tavernDiv.removeChild(brawlEscapeButton)
+                        // tavernDiv.removeChild(brawlDefuseButton)
                         innerGameWindow.appendChild(backButton)
                     }
                 } else { // if miss!
@@ -873,16 +850,16 @@ function displayTavern() {
                         playerStats.Health -= 2
                         displayStats(playerStats) 
                         tavernDiv.removeChild(brawlAttackButton)
-                        tavernDiv.removeChild(brawlEscapeButton)
-                        tavernDiv.removeChild(brawlDefuseButton)
+                        // tavernDiv.removeChild(brawlEscapeButton)
+                        // tavernDiv.removeChild(brawlDefuseButton)
                         innerGameWindow.appendChild(backButton)
                         thisWasABadIdeaCounter++
                     } else if (barBrawlRoundCounter === 2 && thisWasABadIdeaCounter === 0) {
                         textWindow.innerHTML = `Suddenly, there is a loud crashing sound from the tavern entrace. A patrol of Vigiles, Rome's militia lawkeepers, burst through the door.<br><br>They quickly identify you and your erstwhile drinking partners as the troublemakers, and frog-march you outside. You are all given a stern warning to not return to the tavern under pain of imprisonment. Grumbling to yourselves, you grudgingly shake hands and go on your way.`
                         brawlUnresolved = true
                         tavernDiv.removeChild(brawlAttackButton)
-                        tavernDiv.removeChild(brawlEscapeButton)
-                        tavernDiv.removeChild(brawlDefuseButton)
+                        // tavernDiv.removeChild(brawlEscapeButton)
+                        // tavernDiv.removeChild(brawlDefuseButton)
                         innerGameWindow.appendChild(backButton)
                     }
                 }
@@ -912,7 +889,7 @@ function displayTrainingPit() {
     toNextFightButton.style.display = 'none';
     hubNav.innerHTML = '';
     textWindow.style.border = '';
-    textWindow.innerHTML = `Entering the gladiator's training room is a descent into a world of disciplined chaos. The air crackles with the clash of steel meeting steel, punctuated by grunts of exertion. Sunlight spills through high, narrow windows, casting long shadows on the sand-covered floor. Walls bear witness to the scars of countless duels, adorned with weapon racks and battered shields. Sweat-drenched bodies weave through the dance of combat, each fighter honing their skills under the watchful eyes of seasoned instructors. The metallic scent of blood and the rhythmic thud of training weapons create an atmosphere where warriors are forged, preparing for the brutal spectacle of the arena.`;
+    textWindow.innerHTML = `Entering the gladiator's training room is a descent into a world of disciplined chaos. The air crackles with the clash of steel meeting steel, punctuated by grunts of exertion. Sunlight spills through high, narrow windows, casting long shadows on the sand-covered floor. Walls bear witness to the scars of countless duels, adorned with weapon racks and battered shields. Sweat-drenched bodies weave through the dance of combat, each fighter honing their skills under the watchful eyes of seasoned instructors. The rhythmic thud of training weapons echoes through the room.`;
     innerGameWindow.appendChild(backButton);
 
     backButton.addEventListener('click', () => {
