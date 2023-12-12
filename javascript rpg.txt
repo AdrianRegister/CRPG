@@ -63,7 +63,7 @@ add equipment. use tiers bronze > iron > steel > legendary BRONZE + IRON GEAR AD
 
 add more combat flavour text. DONE
 
-create hub areas. flavour text for each area. AREAS, TAVERN DONE. TODO - TRAINING PIT (training functionality)
-implement training points (grant xp with a risk of injury per point?) and training pit area functionality. UP NEXT
+create hub areas. flavour text for each area. AREAS, TAVERN DONE. TODO - INFIRMARY
+implement training points (grant weapon proficiency with chance of failure) and training pit area functionality. DONE BASIC LEVEL. TO FINISH. IMPLEMENT PROFICIENCY INTO COMBAT ENGINE
 
-implement critical hit to combat = randomnumber(1, 100). if num < 5 (5% chance), critical hit = true. stats/weapons will modify this % chance. critical hit deals damage + maximum weapon damage value. add flavour text for critical hits.
+implement critical hit to combat = randomnumber(1, 100). if num < 5 (5% chance), critical hit = true. dexterity/weapons will modify this % chance. critical hit deals damage + maximum weapon damage value. add flavour text for critical hits.

@@ -46,6 +46,7 @@ let playerLevel = 1;
 let gameState = 1; // This indicates the progress through the game. After each fight, the gamestate will be increased by 1. 
                    // At this point, training points will be refreshed to 3 and player money and experience assigned. The gamestate
                    // will also control various flavour texts and rare item drop chance.
+let trainingPoints = 3                   
 let playerXP = 0
 let playerMoney = 15             
 
@@ -53,6 +54,8 @@ let isDrunk = false // this will lower all your combat stats by 1!
 let isConfident = false // this will raise all your combat stats by 1!
 let isHumbled = false // this will lower all your combat stats by 1!
 let brawlUnresolved = false
+
+let swordProficiency = 10 // maximum of 100. increased through training.
 
 // CHARACTER AND NPC CLASSES
 let playerStats = {
@@ -71,6 +74,7 @@ const fighterClasses = [
         Strength: 7,
         Dexterity: 6,
         Defense: 6,
+        Proficiency: swordProficiency,
         Kills: 0,
         Sesterces: playerMoney,
         Experience: playerXP
@@ -82,6 +86,7 @@ const fighterClasses = [
         Strength: 10,
         Dexterity: 5,
         Defense: 5,
+        Proficiency: swordProficiency,
         Kills: 0,
         Sesterces: playerMoney,
         Experience: playerXP
@@ -93,6 +98,7 @@ const fighterClasses = [
         Strength: 5,
         Dexterity: 5,
         Defense: 10,
+        Proficiency: swordProficiency,
         Kills: 0,
         Sesterces: playerMoney,
         Experience: playerXP
@@ -483,6 +489,7 @@ function battle() {
             enemy.enemyStats.Health -= damage;
             console.log('Hit!');
             console.log(`Damage: ${damage}. Enemy health: ${enemy.enemyStats.Health}`);
+            battleText.innerHTML += `<br><br>You deal ${damage} damage!`
         } else {
             battleText.innerHTML += randomValueFromArray(playerMissText)
             console.log('Miss!');
@@ -526,6 +533,7 @@ function battle() {
                 playerStats.Health -= damageAfterArmour;
                 console.log('Opponent hits!');
                 console.log(`Damage: ${damageAfterArmour}. Your health: ${playerStats.Health}`);
+                opponentBattleText.innerHTML += `<br><br>You suffer ${damageAfterArmour} damage!`
             } else {
                 opponentBattleText.innerHTML = randomValueFromArray(enemyMissText)
                 console.log('Opponent misses!');
@@ -541,7 +549,6 @@ function battle() {
                 battleText.innerHTML += '<br><br>You are dead!';
                 battleNav.parentElement.removeChild(battleNav);
             }
-   
         displayStats(playerStats);
         playerTurn = true;
 
@@ -557,6 +564,7 @@ function battle() {
         innerGameWindow.removeChild(opponentBattleText);
 
         gameState += 1
+        trainingPoints = 3
         playerStats.Sesterces += 10 * (enemy.level + 0.2)
         playerStats.Experience += 100 * (enemy.level + 0.2)
 
@@ -890,10 +898,61 @@ function displayTrainingPit() {
     hubNav.innerHTML = '';
     textWindow.style.border = '';
     textWindow.innerHTML = `Entering the gladiator's training room is a descent into a world of disciplined chaos. The air crackles with the clash of steel meeting steel, punctuated by grunts of exertion. Sunlight spills through high, narrow windows, casting long shadows on the sand-covered floor. Walls bear witness to the scars of countless duels, adorned with weapon racks and battered shields. Sweat-drenched bodies weave through the dance of combat, each fighter honing their skills under the watchful eyes of seasoned instructors. The rhythmic thud of training weapons echoes through the room.`;
-    innerGameWindow.appendChild(backButton);
+    if (playerStats.Proficiency > 0) {
+        textWindow.innerHTML += `<br><br>You approach the nearest available instructor. Your bladework would currently embarass a fishwife, and you have little chance of surviving for very long with this current level of skill.`
+    } else if (playerStats.Proficiency > 40) {
+        textWindow.innerHTML += `<br><br>The long weeks of combat experience and hard training have paid off. You feel considerably more self-assured in your swordplay. One of the more seasoned instructors notices you, and flicks his head towards the centre of the room. You follow him and prepare to train.`
+    } else if (playerStats.Proficiency > 60) {
+        textWindow.innerHTML += `<br><br>Over the last year, the training room has become your second home. Your armour has become a second skin and your sword an extension of your arm. You look around at the fresh recruits and shake your head slightly at their incompetence. Is this what you looked like, all those months ago? You are now so skilled that the only worthy training partner is an ex-Centurion from the Fourteenth Legion. He nods respectfully as you approach.`
+    }
+    textWindow.innerHTML += `<br><br>Current sword proficiency: ${playerStats.Proficiency}<br>Training points available: ${trainingPoints}`
+    const trainButton = document.createElement('button')
+    trainButton.textContent = 'Train!'
+    innerGameWindow.appendChild(trainButton)
+    innerGameWindow.appendChild(backButton)
+    if (trainingPoints !== 0) {
+        trainButton.disabled = false
+    }
+
+    trainButton.addEventListener('click', () => {
+        const trainingSuccessChance = randomNumber(0, 100)
+        if (trainingPoints === 3 && playerStats.Proficiency > 0) {
+            textWindow.innerHTML = `You stand across from the instructor. "I won't kill you", he growls. "That's not my job. But by Jupiter, if you can't even learn these basic movements, I may forget my obligations and spare your opponents the trouble!"<br><br>Over the course of the next few hours, you are thoroughly put through your paces. The instructor shows you no pity and little mercy. The end of the session finds you hunched over, vomiting from the intense effort and half-delirious from exhaustion and pain. Bruises are blossoming all over your body.`
+            if (trainingSuccessChance > 20) {
+                textWindow.innerHTML += `<br><br>You feel like you have learnt something of basic swordplay! With luck, you should at least be able to hold your own during your first fight.`
+                playerStats.Proficiency += 5
+            } else {
+                textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+            }
+            trainingPoints -= 1
+        } else if (trainingPoints === 2) {
+            textWindow.innerHTML = `"You again!" snorts the instructor. "One beating wasn't enough? Get ready for another!" He hurls himself at you. You grit your teeth and prepare to suffer.`
+            if (trainingSuccessChance > 50) {
+                textWindow.innerHTML += `<br><br>You feel like you have learnt something of basic swordplay! With luck, you should at least be able to hold your own during your first fight.`
+                playerStats.Proficiency += 3
+            } else {
+                textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+            }
+            trainingPoints -= 1
+        } else if (trainingPoints === 1) {
+            textWindow.innerHTML = `"You again!" snorts the instructor. "One beating wasn't enough? Get ready for another!" He hurls himself at you. You grit your teeth and prepare to suffer.`
+            if (trainingSuccessChance > 70) {
+                textWindow.innerHTML += `<br><br>You feel like you have learnt something of basic swordplay! With luck, you should at least be able to hold your own during your first fight.`
+                playerStats.Proficiency += 2
+            } else {
+                textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+            }
+            trainingPoints -= 1
+        } else {
+            textWindow.innerHTML = `You are utterly exhausted from the training. You doubt that you could even stand up straight, let alone defend yourself against the seasoned instructor. "Come back after your next arena fight! If you're still alive", grunts the instructor.`
+        }
+    textWindow.innerHTML += `<br><br>Current sword proficiency: ${playerStats.Proficiency}<br>Training points available: ${trainingPoints}`
+    displayStats(playerStats)
+    })
 
     backButton.addEventListener('click', () => {
-        innerGameWindow.removeChild(backButton);
+        innerGameWindow.removeChild(trainButton)
+        innerGameWindow.removeChild(backButton)
         textWindow.style.border = 'none';
         textWindow.innerHTML = '';
         toNextFightButton.style.display = 'inline';
