@@ -1,6 +1,6 @@
 # Become a gladiator!
 
-### Work in progress - A fully text-based, story-driven adventure game. Increase your skill and defeat opponents as you progress through the story. NO SAVING IMPLENTED YET - REFRESHING OR CLOSING THE TAB WILL ERASE GAME PROGRESS!
+### Work in progress - A fully text-based, story-driven adventure game. Increase your skill and defeat opponents as you progress through the story. NO SAVING IMPLEMENTED YET - REFRESHING OR CLOSING THE TAB WILL ERASE GAME PROGRESS!
 - Current features:
   - Full tavern functionality
   - Full training pit functionality
