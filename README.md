@@ -6,4 +6,4 @@
   - Full training pit functionality
   - Fights are fully playable, but do not yet scale with player level.
 
-#### To play, simply load index.html in your browser! The entire game file is one big JavaScript file.
+#### To play, go to https://adrianregister.github.io/CRPG/, OR simply load index.html in your browser! The entire game file is one big JavaScript file.
