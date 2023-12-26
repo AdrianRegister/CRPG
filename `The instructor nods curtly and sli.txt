@@ -2,3 +2,124 @@
 `<br><br>After yet another intense sparring session, the instructor breaks off and scowls at you. "Enough. I would have killed you with that feint earlier. Make sure you see it coming next time." He is a man of few words, but you can tell he is pleased with your progress. At least, you think you can tell.`
 `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
 `The instructor looks up as you approach. Without a word, he picks up his gear and trots lightly over to the training circle.`
+
+`<br><br>After yet another intense sparring session, the instructor breaks off and nods. You think you can see the twitch of a smile tugging at the corner of his lips.`
+
+`Your level of skill is now comparable to the instructor's. "You're getting there", he says approvingly. "But there's still some room for improvement. Let's go."`
+`<br><br>The younger, more inexperienced gladiators in the arena have been gathering around you and the instructor to enjoy the show. The quality of your sparring is far above an average day's bout in the arena, and as you and the instructor complete a successful session, you see more than a few of the young fighters breaking off into pairs to practice the moves you displayed.`
+`<br><br>The session has been an excellent workout, but you are not entirely satisfied with your progress. Muttering to yourself, you toss your practice sword aside and vow to do better next time.`
+`The instructor looks up at you and grins. "There's a new move I've been itching to try on you. We'll see if you can handle it!" You grin and clap his shoulder, then follow him to the training cirlce.`
+
+`You are now so deadly that very few fighters can match you blow for blow. One of them is a grizzled ex-Centurion from the Fourteenth Legion. He nods respectfully as you approach.`
+
+
+        /* if (trainingPoints !== 0) {
+            if (playerStats.Proficiency <= 20) {
+                console.log('<25')
+                if (trainingPoints === 3) {
+                    textWindow.innerHTML = `You stand across from the instructor. "I won't kill you", he growls. "That's not my job. But by Jupiter, if you can't even learn these basic movements, I may forget my obligations and spare your opponents the trouble!"<br><br>Over the course of the next few hours, you are thoroughly put through your paces. The instructor shows you no pity and little mercy. The end of the session finds you hunched over, vomiting from the intense effort and half-delirious from exhaustion and pain. Bruises are blossoming all over your body.`
+                    if (trainingSuccessChance > 20) {
+                        textWindow.innerHTML += `<br><br>You feel like you have learnt something of basic swordplay! With luck, you should at least be able to hold your own during your first fight.`
+                        playerStats.Proficiency += 5
+                    } else {
+                        textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+                    }
+                    trainingPoints -= 1
+                } else if (trainingPoints === 2) {
+                    textWindow.innerHTML = `"You again!" snorts the instructor. "One beating wasn't enough? Get ready for another!" He hurls himself at you. You grit your teeth and prepare to suffer.`
+                    if (trainingSuccessChance > 50) {
+                        textWindow.innerHTML += `<br><br>You feel like you have learnt something of basic swordplay! With luck, you should at least be able to hold your own during your first fight.`
+                        playerStats.Proficiency += 4
+                    } else {
+                        textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+                    }
+                    trainingPoints -= 1
+                } else if (trainingPoints === 1) {
+                    textWindow.innerHTML = `"You again!" snorts the instructor. "One beating wasn't enough? Get ready for another!" He hurls himself at you. You grit your teeth and prepare to suffer.`
+                    if (trainingSuccessChance > 70) {
+                        textWindow.innerHTML += `<br><br>You feel like you have learnt something of basic swordplay! With luck, you should at least be able to hold your own during your first fight.`
+                        playerStats.Proficiency += 3
+                    } else {
+                        textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+                    }
+                    trainingPoints -= 1
+                }
+            }
+            if (playerStats.Proficiency > 20 && playerStats.Proficiency <= 40) {
+                console.log('20-40')
+                if (trainingPoints === 3) {
+                    textWindow.innerHTML = `The instructor nods curtly and slips into his fighting stance. You mirror him and quickly move into range.`
+                    if (trainingSuccessChance > 35) {
+                        textWindow.innerHTML += `<br><br>After yet another intense sparring session, the instructor breaks off and scowls at you. "Enough. I would have killed you with that feint earlier. Make sure you see it coming next time." He is a man of few words, but you can tell he is pleased with your progress. At least, you think you can tell.`
+                        playerStats.Proficiency += 5
+                    } else {
+                        textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+                    }
+                    trainingPoints -= 1
+                } else if (trainingPoints === 2) {
+                    textWindow.innerHTML = `The instructor looks up as you approach. Without a word, he picks up his gear and trots lightly over to the training circle.`
+                    if (trainingSuccessChance > 65) {
+                        textWindow.innerHTML += `<br><br>After yet another intense sparring session, the instructor breaks off and nods. You think you can see the twitch of a smile tugging at the corner of his lips.`
+                        playerStats.Proficiency += 4
+                    } else {
+                        textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+                    }
+                    trainingPoints -= 1
+                } else if (trainingPoints === 1) {
+                    textWindow.innerHTML = `The instructor looks up as you approach. Without a word, he picks up his gear and trots lightly over to the training circle.`
+                    if (trainingSuccessChance > 85) {
+                        textWindow.innerHTML += `<br><br>After yet another intense sparring session, the instructor breaks off and nods. You think you can see the twitch of a smile tugging at the corner of his lips.`
+                        playerStats.Proficiency += 3
+                    } else {
+                        textWindow.innerHTML += `<br><br>The training moves too fast for you to follow. You feel like you are always just one step behind. The only thing you have to show for your hours of exertion are cuts, bruises and aching muscles.`
+                    }
+                    trainingPoints -= 1
+                }
+            }
+            if (playerStats.Proficiency > 40 && playerStats.Proficiency <= 60 ) {
+                console.log('40-60')
+                if (trainingPoints === 3) {
+                    textWindow.innerHTML = `Your level of skill is now comparable to the instructor's. "You're getting there", he says approvingly. "But there's still some room for improvement. Let's go."`
+                    if (trainingSuccessChance > 50) {
+                        textWindow.innerHTML += `<br><br>The younger, more inexperienced gladiators in the arena have been gathering around you and the instructor to enjoy the show. The quality of your sparring is far above an average day's bout in the arena, and as you and the instructor complete a successful session, you see more than a few of the young fighters breaking off into pairs to practice the moves you displayed.`
+                        playerStats.Proficiency += 5
+                    } else {
+                        textWindow.innerHTML += `<br><br>The session has been an excellent workout, but you are not entirely satisfied with your progress. Muttering to yourself, you toss your practice sword aside and vow to do better next time.`
+                    }
+                    trainingPoints -= 1
+                } else if (trainingPoints <= 2) {
+                    textWindow.innerHTML = `The instructor looks up at you and grins. "There's a new move I've been itching to try on you. We'll see if you can handle it!" You grin and clap his shoulder, then follow him to the training cirlce.`
+                    if (trainingSuccessChance > 75) {
+                        textWindow.innerHTML += `<br><br>The younger, more inexperienced gladiators in the arena have been gathering around you and the instructor to enjoy the show. The quality of your sparring is far above an average day's bout in the arena, and as you and the instructor complete a successful session, you see more than a few of the young fighters breaking off into pairs to practice the moves you displayed.`
+                        playerStats.Proficiency += 3
+                    } else {
+                        textWindow.innerHTML += `<br><br>The session has been an excellent workout, but you are not entirely satisfied with your progress. Muttering to yourself, you toss your practice sword aside and vow to do better next time.`
+                    }
+                    trainingPoints -= 1
+                }
+            }
+            if (playerStats.Proficiency > 60) {
+                console.log('>60')
+                if (trainingPoints === 3) {
+                    textWindow.innerHTML = `You are now so deadly that very few fighters can match you blow for blow. One of them is a grizzled ex-Centurion from the Fourteenth Legion. He nods respectfully as you approach.`
+                    if (trainingSuccessChance > 75) {
+                        textWindow.innerHTML += `You nod at the ex-officer and step smartly towards him. He meets your sword and the sparring begins. What follows is a whirlwind of precise striking, lightning-quick feints and hypnotic footwork. The dance goes on for some time. The training pit has fallen silent. Everybody's eyes are locked on you and your partner, mouths hanging open in astonishment and heads shaking quietly at the level of skill on display. As the session ends, you feel utterly exhilarated. Your excitement is mirrored in the Centurion's face - each fighter recognises the other as a true blademaster.`
+                        playerStats.Proficiency += 5
+                    } else {
+                        textWindow.innerHTML += `The sparring session is absolutely intense. Every other fighter in the training area has stopped to watch you train. By the time you break contact, you feel as though the Centurion was ever so slightly better than you. You replay the fight back in your mind's eye and identify two pivotal moments that shifted momentum in his favour, making a mental note to be more aware next time.`
+                    }
+                    trainingPoints -= 1
+                } else if (trainingPoints <= 2) {
+                    textWindow.innerHTML = `The ex-Centurion grins at you as you approach. "Good to see you, ${playerNameHeader.textContent}! I've been waiting for you to come back. I've been practicing a counter-move to that feint of yours. Come, let me show you..."`
+                    if (trainingSuccessChance > 85) {
+                        textWindow.innerHTML += `You nod at the ex-officer and step smartly towards him. He meets your sword and the sparring begins. What follows is a whirlwind of precise striking, lightning-quick feints and hypnotic footwork. The dance goes on for some time. The training pit has fallen silent. Everybody's eyes are locked on you and your partner, mouths hanging open in astonishment and heads shaking quietly at the level of skill on display. As the session ends, you feel utterly exhilarated. Your excitement is mirrored in the Centurion's face - each fighter recognises the other as a true blademaster.`
+                        playerStats.Proficiency += 3
+                    } else {
+                        textWindow.innerHTML += `The sparring session is absolutely intense. Every other fighter in the training area has stopped to watch you train. By the time you break contact, you feel as though the Centurion was ever so slightly better than you. You replay the fight back in your mind's eye and identify two pivotal moments that shifted momentum in his favour, making a mental note to be more aware next time.`
+                    }
+                    trainingPoints -= 1
+                } 
+            }
+        } else {
+            textWindow.innerHTML = `You are utterly exhausted from the training. You doubt that you could even stand up straight, let alone defend yourself against the seasoned instructor. "Come back after your next arena fight! If you're still alive", grunts the instructor.`
+        } */
