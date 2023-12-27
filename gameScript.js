@@ -48,14 +48,16 @@ let gameState = 1; // This indicates the progress through the game. After each f
                    // will also control various flavour texts and rare item drop chance.
 let trainingPoints = 3                   
 let playerXP = 0
-let playerMoney = 15             
+let playerMoney = 15          
 
 let isDrunk = false // this will lower all your combat stats by 1!
 let isConfident = false // this will raise all your combat stats by 1!
 let isHumbled = false // this will lower all your combat stats by 1!
 let brawlUnresolved = false
+let wasHealed = false
 
 let swordProficiency = 15 // maximum of 100. increased through training.
+let fullHealth;
 
 // CHARACTER AND NPC CLASSES
 let playerStats = {
@@ -318,6 +320,7 @@ function newGame() {
             playerStats = fighterClasses[2];
         }
 
+        fullHealth = playerStats.Health
         innerGameWindow.style.border = '';
         innerGameWindow.innerHTML = '';
 
@@ -470,7 +473,7 @@ function battle() {
         }, 300);
 
         battleText.innerHTML = 'You strike!<br><br>';
-        const hit = rollToHitPlayer(playerStats.Proficiency, enemy.enemyStats.Proficiency, playerStats.Dexterity, enemy.enemyStats.Dexterity);
+        const hit = rollToHitPlayer(playerStats.Proficiency, enemy.enemyStats.Proficiency, playerStats.Dexterity, enemy.enemyStats.Defense);
 
         const playerHitText = [
             "Your weapon passes your opponent's defenses! He gasps and clutches his side.",
@@ -522,7 +525,7 @@ function battle() {
         playerTurn = false;
 
         if (!playerTurn && enemyAlive) {
-            const hit = rollToHitEnemy(enemy.enemyStats.Proficiency, playerStats.Proficiency, enemy.enemyStats.Dexterity, playerStats.Dexterity);
+            const hit = rollToHitEnemy(enemy.enemyStats.Proficiency, playerStats.Proficiency, enemy.enemyStats.Dexterity, playerStats.Defense);
 
             opponentBattleText.classList.add('expanded');
             setTimeout(function() {
@@ -589,6 +592,7 @@ function battle() {
             playerStats.Defense -= 1
         }
 
+        wasHealed = false
         isDrunk = false
         isConfident = false
         isHumbled = false
@@ -622,26 +626,26 @@ function randomName(firstName, lastName) {
 }
 
 // COMBAT FUNCTIONS
-function rollToHitPlayer(playerProf, enemyProf, playerDexterity, enemyDexterity) {
+function rollToHitPlayer(playerProf, enemyProf, playerDexterity, enemyDefense) {
     const skillDifference = (playerProf - enemyProf) / 2
     const randomModifierAttacker = randomNumber(1, 23)
     const randomModifierDefender = randomNumber(1, 23)
 
     const toHitChance = playerDexterity + randomModifierAttacker + skillDifference
-    const toDefendChance = enemyDexterity + randomModifierDefender - skillDifference
+    const toDefendChance = enemyDefense + randomModifierDefender - skillDifference
     console.log(`Attack modifier: ${randomModifierAttacker} + (${skillDifference}). Defence modifier: ${randomModifierDefender}. 
         Hit: ${toHitChance}. Defend: ${toDefendChance}`)
 
     return toHitChance > toDefendChance;
 }
 
-function rollToHitEnemy(enemyProf, playerProf, enemyDexterity, playerDexterity) {
+function rollToHitEnemy(enemyProf, playerProf, enemyDexterity, playerDefense) {
     const skillDifference = (enemyProf - playerProf) / 2
     const randomModifierAttacker = randomNumber(1, 23)
     const randomModifierDefender = randomNumber(1, 23)
 
     const toHitChance = enemyDexterity + randomModifierAttacker + skillDifference
-    const toDefendChance = playerDexterity + randomModifierDefender - skillDifference
+    const toDefendChance = playerDefense + randomModifierDefender - skillDifference
     console.log(`Attack modifier: ${randomModifierAttacker} + (${skillDifference}). Defence modifier: ${randomModifierDefender}. 
         Hit: ${toHitChance}. Defend: ${toDefendChance}`)
 
@@ -1083,14 +1087,55 @@ function displayInfirmary() {
     hubNav.innerHTML = '';
     textWindow.style.border = '';
     textWindow.innerHTML = `In the damp corridors adjacent to the roaring arena, the infirmary stands as a sanctuary for the wounded gladiators. The scent of medicinal herbs hangs in the musty air. Bare cots line the walls, some of them occupied by injured warriors in various states of discomfort and consciousness. Several of them are covered by white cloths, a chipped clay token indicating the body needs to be disposed of. The infirmary staff are poorly trained and constantly busy. They stink of alcohol. Provided you train well and are lucky, there may not be a need to suffer their treatment too often.`;
+    const healButton = document.createElement('button')
+    healButton.textContent = 'Seek healing'
+    innerGameWindow.appendChild(healButton)
     innerGameWindow.appendChild(backButton);
+    const payForHealingButton = document.createElement('button')
+
+    healButton.addEventListener('click', () => {
+        if (playerStats.Health !== fullHealth) {
+            healButton.style.display = 'none'
+            payForHealingButton.textContent = 'Pay 10 sesterces'
+            if (!wasHealed) {
+                innerGameWindow.appendChild(payForHealingButton)
+                textWindow.innerHTML = `The nearest physician approaches you. You point out your various wounds and eye his rusty tools doubtfully. "Don't fret", he laughs. "I'll fix you up. Can't say whether you'll feel better afterwards, though!" He turns away to his operating table cackling to himself, motioning for you to lie down. You send a quick prayer to Salus, the god of health, and lie down on the cold stone table.`
+            } else {
+                textWindow.innerHTML = `The physician peers at you. "I've seen you already, haven't I? There's other fighters that need me more. Shoo!"`
+            }
+
+            payForHealingButton.addEventListener('click', () => {
+                if (playerStats.Sesterces >= 10) {
+                    playerStats.Sesterces -= 10
+                    innerGameWindow.removeChild(payForHealingButton)
+                    textWindow.innerHTML = `The physician's work is both quick and painful. "Go over there and walk it off. Give your sword a few practice swings. I'm sure you'll be fine." He brusquely ushers you away and out the door, beckoning for his next unfortunate patient to enter.`
+                    const amountHealed = randomNumber(5, 15)
+                    playerStats.Health += amountHealed
+                    if (playerStats.Health > fullHealth) {
+                        playerStats.Health = fullHealth
+                    }
+                    displayStats(playerStats)
+                    wasHealed = true
+                } else {
+                    textWindow.innerHTML = `"You want me to patch up that hole in your chest? Give me money first. I have costs to cover, you know." The physician pushes you aside and motions for the next patient. You have no choice but to pray to the gods that your wounds heal overnight.<br><br>The next morning, you are somewhat disappointed to find that your prayers went unanswered.`
+                }
+            })
+        } else {
+            // innerGameWindow.removeChild(payForHealingButton)
+            textWindow.innerHTML = `You are already at full health and have no need of the infirmary.`
+        }
+    })
 
     backButton.addEventListener('click', () => {
-        innerGameWindow.removeChild(backButton);
-        textWindow.style.border = 'none';
-        textWindow.innerHTML = '';
-        toNextFightButton.style.display = 'inline';
-        displayHub();
+        if (innerGameWindow.contains(payForHealingButton)) {
+            innerGameWindow.removeChild(payForHealingButton)
+        }
+        innerGameWindow.removeChild(healButton)
+        innerGameWindow.removeChild(backButton)
+        textWindow.style.border = 'none'
+        textWindow.innerHTML = ''
+        toNextFightButton.style.display = 'inline'
+        displayHub()
     });
 }
 

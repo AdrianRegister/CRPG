@@ -54,7 +54,7 @@ start implementing combat system. attack / defend / feint, each with a percentag
         	defended = number2 + char2_def
    	if to_hit > defended, ACTION IS SUCCESSFUL	DONE
 
-	damage formula
+	damage formula		FIND WAY TO USE DEFENCE HERE
 	strength vs defence. 
 	random_modifier = random_number(1, 20)
 	damage = (strength + random_modifier)	DONE
@@ -63,8 +63,8 @@ add equipment. use tiers bronze > iron > steel > legendary BRONZE + IRON GEAR AD
 
 add more combat flavour text. DONE
 
-create hub areas. flavour text for each area. AREAS, TAVERN DONE. TODO - INFIRMARY
-implement training points (grant weapon proficiency with chance of failure) and training pit area functionality. DONE BASIC LEVEL. TO FINISH. IMPLEMENT PROFICIENCY INTO COMBAT ENGINE
+create hub areas. flavour text for each area. TAVERN + TRAIN PIT + INFIRMARY DONE. TODO - QUARTERMASTER
+implement training points (grant weapon proficiency with chance of failure) and training pit area functionality. DONE
 
 implement critical hit to combat = randomnumber(1, 100). if num < 5 (5% chance), critical hit = true. dexterity/weapons will modify this % chance. critical hit deals damage + maximum weapon damage value. add flavour text for critical hits.
 
