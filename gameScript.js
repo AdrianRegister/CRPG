@@ -48,6 +48,7 @@ let gameState = 1; // This indicates the progress through the game. After each f
                    // will also control various flavour texts and rare item drop chance.
 let trainingPoints = 3                   
 let playerXP = 0
+let xpTrigger = 250
 let playerMoney = 15          
 
 let isDrunk = false // this will lower all your combat stats by 1!
@@ -146,7 +147,7 @@ class Enemy {
     }
 
     calculateProficiency(enemyLevel) {
-        return randomNumber(enemyLevel + (enemyLevel * 1.5) + 10, enemyLevel + (enemyLevel * 3) + 10) 
+        return randomNumber(enemyLevel + (enemyLevel * 1.5) + (playerStats.Proficiency - 5), enemyLevel + (enemyLevel * 1.5) + playerStats.Proficiency) 
     }
 }
 
@@ -270,7 +271,7 @@ function newGame() {
     const inputName = document.createElement('input');
     inputName.setAttribute('id', 'input-name');
 
-    addBlankLine(innerGameWindow, 5);
+    addBlankLine(innerGameWindow, 1);
 
     innerGameWindow.appendChild(inputNameLabel);
     innerGameWindow.appendChild(inputName);
@@ -408,8 +409,16 @@ function battle() {
     displayOppStats(enemy.enemyStats);
 
     textWindow.style.border = '';
-    textWindow.innerHTML = `Your opponent, ${enemy.name}, stands across the sand from you. Like you, he is a fellow recruit, and this is his first fight.<br><br>He seems nervous, and clenches his weapon tightly. You both slowly circle each other, neither of you willing to overly commit. The early afternoon sun hangs high above. The arena stands are mostly empty - there are not many people interested in seeing two novices fight.<br><br>Your mouth is dry and your heart is beating painfully against your ribcage as you take one, then two, then three steps towards your opponent. Raising his shield to meet your tentative charge, the duel begins!`;
-
+    if (gameState === 1) {
+        textWindow.innerHTML = `Your opponent, ${enemy.name}, stands across the sand from you. Like you, he is a fellow recruit, and this is his first fight.<br><br>He seems nervous, and clenches his weapon tightly. You both slowly circle each other, neither of you willing to overly commit. The early afternoon sun hangs high above. The arena stands are mostly empty - there are not many people interested in seeing two novices fight.<br><br>Your mouth is dry and your heart is beating painfully against your ribcage as you take one, then two, then three steps towards your opponent. Raising his shield to meet your tentative charge, the duel begins!`;
+    } else if (gameState !== 1 && gameState < 5) {
+        textWindow.innerHTML = `With some combat experience already under your belt, you feel somewhat more confident than before as you lightly jog onto the warm arena sand. The crowds are still sparse, but you notice that they are at least focusing more intently on you and your opponent.<br><br>Standing across from you is ${enemy.name}. Like you, he has also been blooded, and should prove a somewhat sterner test than your previous opponent. You grit your teeth, do your best to control your rapidly rising adrenaline, and move into combat range!`
+    } else if (gameState >= 5 && gameState < 10) {
+        textWindow.innerHTML = `As your opponent, ${enemy.name}, comes into view across the sands, you settle into your now-familiar pre-fight routine. You are now an experienced gladiator, and can suppress emotions of doubt and panic very effectively. However, so can your opponent. For a fight of this level, the stands are packed tightly with spectators and their cheers, and jeers, ring out and mix with one another, creating a disorienting wall of noise. Gripping your weapon and shield, you efficiently close the distance to your opponent and enter combat!`
+    } else if (gameState >= 10) {
+        textWindow.innerHTML = `You hear the crowd's roar as soon as you step out of the gladiators' preparation room deep in the bowels of the arena. The noise only builds as you lightly jog through the dank, narrow tunnels on your way to the fighters' entrance. By the time you emerge into the bright sunlight, the din is utterly deafening. Quickly glancing up at the packed throngs standing above, you notice the presence of several senators gazing down. Their normally haughty exteriors have been replaced by flushed excitement- Clearly, not even the most important Romans can hold their emotions in check at an event of this magnitude.<br><br>Across the sands from you stands ${enemy.name}. Like you, he is a hardened veteran and a lethal warrior. This will not be easy. You sharply exhale several times, puffing out your cheeks as you feel the excitement and tension around you rise to a fever pitch. You and your opponent quickly march up to each other and tap your weapons against the other's shield as a mark of mutual respect, recognising each other as masters of your craft.<br><br>Then, you take two sharp steps back, wait for a few seconds, and charge! Glory awaits the victor!`
+    }
+   
     if (isDrunk) {
         textWindow.innerHTML += "<br><br>You are still feeling the effects from the night before. A fight to the death is not something that should be done while nursing a monster hangover. Yet, here you are."
     }
@@ -474,6 +483,7 @@ function battle() {
 
         battleText.innerHTML = 'You strike!<br><br>';
         const hit = rollToHitPlayer(playerStats.Proficiency, enemy.enemyStats.Proficiency, playerStats.Dexterity, enemy.enemyStats.Defense);
+        const critHit = criticalHit(playerStats.Dexterity)
 
         const playerHitText = [
             "Your weapon passes your opponent's defenses! He gasps and clutches his side.",
@@ -497,12 +507,21 @@ function battle() {
         ]
 
         if (hit) {
-            battleText.innerHTML += randomValueFromArray(playerHitText)
-            const damage = calculateDamage(playerEquipment.Weapon[1], playerStats.Strength)
-            enemy.enemyStats.Health -= damage;
-            console.log('Hit!');
-            console.log(`Damage: ${damage}. Enemy health: ${enemy.enemyStats.Health}`);
-            battleText.innerHTML += `<br><br>You deal ${damage} damage!`
+            if (critHit) {
+                battleText.innerHTML += `<b>CRITICAL HIT!!!</b>`
+                const critDamage = calculateDamage(playerEquipment.Weapon[1], playerStats.Strength) + playerEquipment.Weapon[1].length
+                enemy.enemyStats.Health -= critDamage
+                console.log('Hit!');
+                console.log(`Damage: ${critDamage}. Enemy health: ${enemy.enemyStats.Health}`);
+                battleText.innerHTML += `<br><br>You deal ${critDamage} CRITICAL damage!`
+            } else {
+                battleText.innerHTML += randomValueFromArray(playerHitText)
+                const damage = calculateDamage(playerEquipment.Weapon[1], playerStats.Strength)
+                enemy.enemyStats.Health -= damage;
+                console.log('Hit!');
+                console.log(`Damage: ${damage}. Enemy health: ${enemy.enemyStats.Health}`);
+                battleText.innerHTML += `<br><br>You deal ${damage} damage!`
+            }
         } else {
             battleText.innerHTML += randomValueFromArray(playerMissText)
             console.log('Miss!');
@@ -512,7 +531,11 @@ function battle() {
             enemyAlive = false;
             enemy.enemyStats.Health = 'Dead!';
             battleText.innerHTML += ` ${enemy.name} staggers backwards, blood pouring from his wounds. You step forward and deliver the death blow!`;
-            battleText.innerHTML += '<br><br>Your foe crumples to the ground and lies motionless, his blood streaming into the sand beneath. The handful of spectators mutter among themselves. Some of them clap, the sound echoing hollowly around the sparsely-populated arena. As the rush of survival floods your body, your ragged breathing slowly returns to normal. You have survived your first fight! You stand victorious!';
+            if (gameState === 1) {
+                battleText.innerHTML += '<br><br>Your foe crumples to the ground and lies motionless, his blood streaming into the sand beneath. The handful of spectators mutter among themselves. Some of them clap, the sound echoing hollowly around the sparsely-populated arena. As the rush of survival floods your body, your ragged breathing slowly returns to normal. You have survived your first fight! You stand victorious!';
+            } else if (gameState !== 1) {
+                battleText.innerHTML += `<br><br>${enemy.name} staggers backwards and crumples into the dust. He lets out one final, gasping, shuddering breath and his eyes become cloudy and glazed. You mutter a prayer to Mars, both for your fallen foe and for you. Then, you step into the middle of the bloody arena and raise your arms in victory, accepting the crowd's adulation!`
+            }
             battleNav.parentElement.removeChild(battleNav);
             opponentBattleText.innerHTML = '';
             opponentBattleText.style.border = 'none';
@@ -526,6 +549,7 @@ function battle() {
 
         if (!playerTurn && enemyAlive) {
             const hit = rollToHitEnemy(enemy.enemyStats.Proficiency, playerStats.Proficiency, enemy.enemyStats.Dexterity, playerStats.Defense);
+            const critHit = criticalHit(enemy.enemyStats.Dexterity)
 
             opponentBattleText.classList.add('expanded');
             setTimeout(function() {
@@ -533,20 +557,37 @@ function battle() {
             }, 300);
     
             if (hit) {
-                opponentBattleText.innerHTML = randomValueFromArray(enemyHitText)
-                const damage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength)
-                const damageAfterArmour = damage - (
-                    playerEquipment.Torso[1] + 
-                    playerEquipment.Head[1] +
-                    playerEquipment.Offhand[1]
-                    )
-                if (damageAfterArmour < 0) {
-                    damageAfterArmour === 1
-                }                 
-                playerStats.Health -= damageAfterArmour;
-                console.log('Opponent hits!');
-                console.log(`Damage: ${damageAfterArmour}. Your health: ${playerStats.Health}`);
-                opponentBattleText.innerHTML += `<br><br>You suffer ${damageAfterArmour} damage!`
+                if (critHit) {
+                    opponentBattleText.innerHTML = `<b>CRITICAL HIT!!!</b>`
+                    const critDamage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength) + bronzeShortsword.damage.length
+                    const damageAfterArmour = critDamage - (
+                        playerEquipment.Torso[1] + 
+                        playerEquipment.Head[1] +
+                        playerEquipment.Offhand[1]
+                        )
+                    if (damageAfterArmour < 0) {
+                        damageAfterArmour === 1
+                    }
+                    playerStats.Health -= damageAfterArmour;
+                    console.log('Opponent hits!');
+                    console.log(`Damage: ${damageAfterArmour}. Your health: ${playerStats.Health}`);
+                    opponentBattleText.innerHTML += `<br><br>You suffer ${damageAfterArmour} CRITICAL damage!`
+                } else {
+                    opponentBattleText.innerHTML = randomValueFromArray(enemyHitText)
+                    const damage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength)
+                    const damageAfterArmour = damage - (
+                        playerEquipment.Torso[1] + 
+                        playerEquipment.Head[1] +
+                        playerEquipment.Offhand[1]
+                        )
+                    if (damageAfterArmour < 0) {
+                        damageAfterArmour === 1
+                    }                 
+                    playerStats.Health -= damageAfterArmour;
+                    console.log('Opponent hits!');
+                    console.log(`Damage: ${damageAfterArmour}. Your health: ${playerStats.Health}`);
+                    opponentBattleText.innerHTML += `<br><br>You suffer ${damageAfterArmour} damage!`
+                }
             } else {
                 opponentBattleText.innerHTML = randomValueFromArray(enemyMissText)
                 console.log('Opponent misses!');
@@ -576,10 +617,23 @@ function battle() {
         innerGameWindow.removeChild(battleText);
         innerGameWindow.removeChild(opponentBattleText);
 
+        // heal player a little after battle
+        const amountHealed = randomNumber(8, 12)
+        playerStats.Health += amountHealed
+        if (playerStats.Health > fullHealth) {
+            playerStats.Health = fullHealth
+        }
+
         gameState += 1
         trainingPoints = 3
         playerStats.Sesterces += 10 * (enemy.level + 0.2)
-        playerStats.Experience += 100 * (enemy.level + 0.2)
+        playerStats.Experience += 150 * (enemy.level + 0.2)
+        if (playerStats.Experience >= xpTrigger) {
+            levelUp(playerStats)
+            xpTrigger += playerLevel + 1 * (playerLevel * 250)
+            textWindow.innerHTML = `<br>You have leveled up! Your stats have increased!<br>`
+            console.log(`total xp = ${playerXP}. xp to next level: ${xpTrigger}. xp needed: ${xpTrigger - playerXP}`)
+        }
 
         if (isDrunk || isHumbled) {
             playerStats.Strength += 1
@@ -625,6 +679,16 @@ function randomName(firstName, lastName) {
     return firstName[random1] + ' ' + lastName[random2];
 }
 
+function levelUp(statsObject) {
+    for (let stat in statsObject) {
+        if (stat === 'Strength' || stat === 'Dexterity' || stat === 'Defense' || stat === 'Level') {
+            statsObject[stat] += 1
+        }
+    }
+    playerLevel += 1
+    console.log('stats:', playerStats)
+}
+
 // COMBAT FUNCTIONS
 function rollToHitPlayer(playerProf, enemyProf, playerDexterity, enemyDefense) {
     const skillDifference = (playerProf - enemyProf) / 2
@@ -655,6 +719,14 @@ function rollToHitEnemy(enemyProf, playerProf, enemyDexterity, playerDefense) {
 function calculateDamage(weaponDamage, char1Strength) {
     strengthModifier = char1Strength / 2
     return strengthModifier + randomValueFromArray(weaponDamage);
+}
+
+function criticalHit(dexterity) {
+    const chanceForCritHit = randomNumber(1,100)
+	if (chanceForCritHit <= (5 + dexterity)) {
+        console.log('crit chance: ' + chanceForCritHit)
+		return true
+	}
 }
   
 // NAVIGATING THE UI
@@ -716,8 +788,10 @@ function displayStats(object) {
         const statLine = document.createElement('p');
         statLine.textContent = `${stat}: ${value}`;
         statsList.appendChild(statLine);
+        if (stat === 'Health') {
+            statLine.textContent = `${stat}: ${value} / ${fullHealth}`
+        }
     }
-    
     gameMenuDisplay.appendChild(statsList);
 }
 
