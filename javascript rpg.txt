@@ -63,12 +63,12 @@ add equipment. use tiers bronze > iron > steel > legendary BRONZE + IRON GEAR AD
 
 add more combat flavour text. DONE
 
-create hub areas. flavour text for each area. TAVERN + TRAIN PIT + INFIRMARY DONE. TODO - QUARTERMASTER
+create hub areas. flavour text for each area. ALL DONE!
+
 implement training points (grant weapon proficiency with chance of failure) and training pit area functionality. DONE
 
 implement critical hit to combat = randomnumber(1, 100). if num < 5 (5% chance), critical hit = true. dexterity/weapons will modify this % chance. critical hit deals damage + maximum weapon damage value. add flavour text for critical hits. DONE
 
 starting perks - provide bonuses eg student of the blade (raises training success chance), survival instinct (if damage > 10, reduce by 3) etc IGNORE FOR NOW
 
-TODO: change how much xp enemies give relative to their level
-	  implement quartermaster! DELAY
+TODO: implement special attacks!

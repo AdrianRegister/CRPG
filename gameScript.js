@@ -49,7 +49,7 @@ let gameState = 1; // This indicates the progress through the game. After each f
 let trainingPoints = 3                   
 let playerXP = 0
 let xpTrigger = 250
-let playerMoney = 15          
+let playerMoney = 15         
 
 let isDrunk = false // this will lower all your combat stats by 1!
 let isConfident = false // this will raise all your combat stats by 1!
@@ -71,21 +71,21 @@ let playerStats = {
 
 const fighterClasses = [
     {
-        Class: 'Myrmidon',
+        Class: 'Murmillo',
         Level: 1,
-        Health: 25,
+        Health: 27,
         Strength: 7,
-        Dexterity: 6,
-        Defense: 6,
+        Dexterity: 7,
+        Defense: 7,
         Proficiency: swordProficiency,
         Kills: 0,
         Sesterces: playerMoney,
         Experience: playerXP
     },
     {
-        Class: 'Barbarian',
+        Class: 'Thraex',
         Level: 1,
-        Health: 37,
+        Health: 34,
         Strength: 10,
         Dexterity: 5,
         Defense: 5,
@@ -95,7 +95,7 @@ const fighterClasses = [
         Experience: playerXP
     },
     {
-        Class: 'Hoplite',
+        Class: 'Hoplomachus',
         Level: 1,
         Health: 30,
         Strength: 5,
@@ -147,7 +147,10 @@ class Enemy {
     }
 
     calculateProficiency(enemyLevel) {
-        return randomNumber(enemyLevel + (enemyLevel * 1.5) + (playerStats.Proficiency - 5), enemyLevel + (enemyLevel * 1.5) + playerStats.Proficiency) 
+        if (gameState === 1) {
+            return 18
+        }
+        return randomNumber((enemyLevel * 1.5) + (playerStats.Proficiency - 5), (enemyLevel * 1.5) + playerStats.Proficiency) 
     }
 }
 
@@ -210,30 +213,34 @@ const leatherBuckler = new Armour(
 const ironShortsword = new Weapon(
     'Iron shortsword',
     damage = Array.from(Array(13).keys()).slice(1),
-    50,
+    25,
     "A solid, standard-issue weapon. Both legionaries and gladiators have found it to be equally as effective in war as in the arena."
 )
 
 const ironArmour = new Armour(
     'Iron chestplate',
     3, 
-    75,
+    35,
     "Basic but reliable body armour. This can deflect both cuts and thrusts, making it an excellent choice in combat."
 )
 
 const ironHelmet = new Armour(
     'Iron helmet',
     2,
-    50,
+    25,
     "A stout, standard-issue iron helmet. Widely used across the Empire."
 )
 
 const ironShield = new Armour(
     'Iron shield',
     3,
-    60,
+    30,
     "This strong wooden shield is reinforced with iron bands crossing the centre."
 )
+
+const ironGear = [
+    ironArmour, ironHelmet, ironShield, ironShortsword
+]
 
 // NAMES
 const firstNames = [
@@ -286,12 +293,12 @@ function newGame() {
     const barb = document.createElement('option');
     const hop = document.createElement('option');
 
-    myr.text = 'Myrmidon';
-    myr.value = 'myrmidon';
-    barb.text = 'Barbarian';
-    barb.value = 'barbarian';
-    hop.text = 'Hoplite';
-    hop.value = 'hoplite';
+    myr.text = 'Murmillo';
+    myr.value = 'Murmillo';
+    barb.text = 'Thraex';
+    barb.value = 'Thraex';
+    hop.text = 'Hoplomachus';
+    hop.value = 'Hoplomachus';
 
     chooseClass.add(myr);
     chooseClass.add(barb);
@@ -313,11 +320,11 @@ function newGame() {
             playerNameHeader.textContent = inputName.value;
         }
 
-        if (chooseClass.value === 'myrmidon') {
+        if (chooseClass.value === 'Murmillo') {
             playerStats = fighterClasses[0];
-        } else if (chooseClass.value === 'barbarian') {
+        } else if (chooseClass.value === 'Thraex') {
             playerStats = fighterClasses[1];
-        } else if (chooseClass.value === 'hoplite') {
+        } else if (chooseClass.value === 'Hoplomachus') {
             playerStats = fighterClasses[2];
         }
 
@@ -368,16 +375,16 @@ function createNewEnemy() {
 }
 
 function calculateStats(oppLevel, enemyStats, fighterClass) {
-    if (fighterClass.Class === 'Myrmidon') {
+    if (fighterClass.Class === 'Murmillo') {
         enemyStats.Strength = 7;
         enemyStats.Dexterity = 6;
         enemyStats.Defense = 6;
-    } else if (fighterClass.Class === 'Barbarian') {
-        enemyStats.Health = 37;
+    } else if (fighterClass.Class === 'Thraex') {
+        enemyStats.Health = 34;
         enemyStats.Strength = 10;
         enemyStats.Dexterity = 5;
         enemyStats.Defense = 5;
-    } else if (fighterClass.Class === 'Hoplite') {
+    } else if (fighterClass.Class === 'Hoplomachus') {
         enemyStats.Health = 30;
         enemyStats.Strength = 5;
         enemyStats.Dexterity = 5;
@@ -385,14 +392,14 @@ function calculateStats(oppLevel, enemyStats, fighterClass) {
     }
 
     for (let stat in enemyStats) {
-        if (oppLevel === 1) {
+        if (gameState === 1) {
             enemyStats[stat] -= 1;
         } else if (1 < oppLevel && oppLevel <= 3) {
-            enemyStats[stat] += randomNumber(1, 3);
+            enemyStats[stat] += randomNumber(1, 2);
         } else if (3 < oppLevel && oppLevel <= 6) {
-            enemyStats[stat] += randomNumber(3, 6);
+            enemyStats[stat] += randomNumber(3, 5);
         } else if (6 < oppLevel) {
-            enemyStats[stat] += randomNumber(6, 15);
+            enemyStats[stat] += randomNumber(6, 8);
         }         
     }
 
@@ -416,7 +423,7 @@ function battle() {
     } else if (gameState >= 5 && gameState < 10) {
         textWindow.innerHTML = `As your opponent, ${enemy.name}, comes into view across the sands, you settle into your now-familiar pre-fight routine. You are now an experienced gladiator, and can suppress emotions of doubt and panic very effectively. However, so can your opponent. For a fight of this level, the stands are packed tightly with spectators and their cheers, and jeers, ring out and mix with one another, creating a disorienting wall of noise. Gripping your weapon and shield, you efficiently close the distance to your opponent and enter combat!`
     } else if (gameState >= 10) {
-        textWindow.innerHTML = `You hear the crowd's roar as soon as you step out of the gladiators' preparation room deep in the bowels of the arena. The noise only builds as you lightly jog through the dank, narrow tunnels on your way to the fighters' entrance. By the time you emerge into the bright sunlight, the din is utterly deafening. Quickly glancing up at the packed throngs standing above, you notice the presence of several senators gazing down. Their normally haughty exteriors have been replaced by flushed excitement- Clearly, not even the most important Romans can hold their emotions in check at an event of this magnitude.<br><br>Across the sands from you stands ${enemy.name}. Like you, he is a hardened veteran and a lethal warrior. This will not be easy. You sharply exhale several times, puffing out your cheeks as you feel the excitement and tension around you rise to a fever pitch. You and your opponent quickly march up to each other and tap your weapons against the other's shield as a mark of mutual respect, recognising each other as masters of your craft.<br><br>Then, you take two sharp steps back, wait for a few seconds, and charge! Glory awaits the victor!`
+        textWindow.innerHTML = `You hear the crowd's roar as soon as you step out of the gladiators' preparation room deep in the bowels of the arena. The noise only builds as you lightly jog through the dank, narrow tunnels on your way to the fighters' entrance. By the time you emerge into the bright sunlight, the din is utterly deafening. Quickly glancing up at the packed throngs standing above, you notice the presence of several senators gazing down. Their normally haughty exteriors have been replaced by flushed excitement - clearly, not even the most important Romans can hold their emotions in check at an event of this magnitude.<br><br>Across the sands from you stands ${enemy.name}. Like you, he is a hardened veteran and a lethal warrior. This will not be easy. You sharply exhale several times, puffing out your cheeks as you feel the excitement and tension around you rise to a fever pitch. You and your opponent quickly march up to each other and tap your weapons against the other's shield as a mark of mutual respect, recognising each other as masters of your craft.<br><br>Then, you take two sharp steps back, wait for a few seconds, and charge! Glory awaits the victor!`
     }
    
     if (isDrunk) {
@@ -560,7 +567,7 @@ function battle() {
                 if (critHit) {
                     opponentBattleText.innerHTML = `<b>CRITICAL HIT!!!</b>`
                     const critDamage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength) + bronzeShortsword.damage.length
-                    const damageAfterArmour = critDamage - (
+                    let damageAfterArmour = critDamage - (
                         playerEquipment.Torso[1] + 
                         playerEquipment.Head[1] +
                         playerEquipment.Offhand[1]
@@ -575,13 +582,13 @@ function battle() {
                 } else {
                     opponentBattleText.innerHTML = randomValueFromArray(enemyHitText)
                     const damage = calculateDamage(bronzeShortsword.damage, enemy.enemyStats.Strength)
-                    const damageAfterArmour = damage - (
+                    let damageAfterArmour = damage - (
                         playerEquipment.Torso[1] + 
                         playerEquipment.Head[1] +
                         playerEquipment.Offhand[1]
                         )
-                    if (damageAfterArmour < 0) {
-                        damageAfterArmour === 1
+                    if (damageAfterArmour <= 0) {
+                        damageAfterArmour = 1
                     }                 
                     playerStats.Health -= damageAfterArmour;
                     console.log('Opponent hits!');
@@ -686,12 +693,11 @@ function levelUp(statsObject) {
         }
     }
     playerLevel += 1
-    console.log('stats:', playerStats)
 }
 
 // COMBAT FUNCTIONS
 function rollToHitPlayer(playerProf, enemyProf, playerDexterity, enemyDefense) {
-    const skillDifference = (playerProf - enemyProf) / 2
+    const skillDifference = (playerProf - enemyProf) / 3
     const randomModifierAttacker = randomNumber(1, 23)
     const randomModifierDefender = randomNumber(1, 23)
 
@@ -704,7 +710,7 @@ function rollToHitPlayer(playerProf, enemyProf, playerDexterity, enemyDefense) {
 }
 
 function rollToHitEnemy(enemyProf, playerProf, enemyDexterity, playerDefense) {
-    const skillDifference = (enemyProf - playerProf) / 2
+    const skillDifference = (enemyProf - playerProf) / 3
     const randomModifierAttacker = randomNumber(1, 23)
     const randomModifierDefender = randomNumber(1, 23)
 
@@ -924,7 +930,6 @@ function displayTavern() {
         let finalBrawlCounter = 0
 
         brawlAttackButton.addEventListener('click', () => {
-            console.log(barBrawlRoundCounter, kickingAssCounter, thisWasABadIdeaCounter)
             if (barBrawlRoundCounter < 3) {
                 if (randomNumber(1, 100) >= 50) { // if hit!
                     console.log('hit!')
@@ -1016,12 +1021,10 @@ function displayTrainingPit() {
     innerGameWindow.appendChild(backButton)
 
     trainButton.addEventListener('click', () => {
-        console.log('training clicked!')
         const trainingSuccessChance = randomNumber(0, 100)
         if (trainingPoints !== 0) {
             switch (true) {
                 case playerStats.Proficiency <= 20:
-                    console.log('<25');
                     if (trainingPoints === 3) {
                         textWindow.innerHTML = `You stand across from the instructor. "I won't kill you", he growls. "That's not my job. But by Jupiter, if you can't even learn these basic movements, I may forget my obligations and spare your opponents the trouble!"<br><br>Over the course of the next few hours, you are thoroughly put through your paces. The instructor shows you no pity and little mercy. The end of the session finds you hunched over, vomiting from the intense effort and half-delirious from exhaustion and pain. Bruises are blossoming all over your body.`;
                         if (trainingSuccessChance > 20) {
@@ -1053,7 +1056,6 @@ function displayTrainingPit() {
                     break;
         
                 case playerStats.Proficiency > 20 && playerStats.Proficiency <= 40:
-                    console.log('20-40');
                     if (trainingPoints === 3) {
                         textWindow.innerHTML = `The instructor nods curtly and slips into his fighting stance. You mirror him and quickly move into range.`;
                         if (trainingSuccessChance > 35) {
@@ -1065,7 +1067,7 @@ function displayTrainingPit() {
                         trainingPoints -= 1;
                     } else if (trainingPoints === 2) {
                         textWindow.innerHTML = `The instructor looks up as you approach. Without a word, he picks up his gear and trots lightly over to the training circle.`;
-                        if (trainingSuccessChance > 65) {
+                        if (trainingSuccessChance > 60) {
                             textWindow.innerHTML += `<br><br>After yet another intense sparring session, the instructor breaks off and nods. You think you can see the twitch of a smile tugging at the corner of his lips.`;
                             playerStats.Proficiency += 4;
                         } else {
@@ -1074,7 +1076,7 @@ function displayTrainingPit() {
                         trainingPoints -= 1;
                     } else if (trainingPoints === 1) {
                         textWindow.innerHTML = `The instructor looks up as you approach. Without a word, he picks up his gear and trots lightly over to the training circle.`;
-                        if (trainingSuccessChance > 85) {
+                        if (trainingSuccessChance > 75) {
                             textWindow.innerHTML += `<br><br>After yet another intense sparring session, the instructor breaks off and nods. You think you can see the twitch of a smile tugging at the corner of his lips.`;
                             playerStats.Proficiency += 3;
                         } else {
@@ -1085,10 +1087,9 @@ function displayTrainingPit() {
                     break;
         
                 case playerStats.Proficiency > 40 && playerStats.Proficiency <= 60:
-                    console.log('40-60');
                     if (trainingPoints === 3) {
                         textWindow.innerHTML = `Your level of skill is now comparable to the instructor's. "You're getting there", he says approvingly. "But there's still some room for improvement. Let's go."`;
-                        if (trainingSuccessChance > 50) {
+                        if (trainingSuccessChance > 45) {
                             textWindow.innerHTML += `<br><br>The younger, more inexperienced gladiators in the arena have been gathering around you and the instructor to enjoy the show. The quality of your sparring is far above an average day's bout in the arena, and as you and the instructor complete a successful session, you see more than a few of the young fighters breaking off into pairs to practice the moves you displayed.`;
                             playerStats.Proficiency += 5;
                         } else {
@@ -1097,7 +1098,7 @@ function displayTrainingPit() {
                         trainingPoints -= 1;
                     } else if (trainingPoints <= 2) {
                         textWindow.innerHTML = `The instructor looks up at you and grins. "There's a new move I've been itching to try on you. We'll see if you can handle it!" You grin and clap his shoulder, then follow him to the training circle.`;
-                        if (trainingSuccessChance > 75) {
+                        if (trainingSuccessChance > 70) {
                             textWindow.innerHTML += `<br><br>The younger, more inexperienced gladiators in the arena have been gathering around you and the instructor to enjoy the show. The quality of your sparring is far above an average day's bout in the arena, and as you and the instructor complete a successful session, you see more than a few of the young fighters breaking off into pairs to practice the moves you displayed.`;
                             playerStats.Proficiency += 3;
                         } else {
@@ -1108,10 +1109,9 @@ function displayTrainingPit() {
                     break;
         
                 case playerStats.Proficiency > 60:
-                    console.log('>60');
                     if (trainingPoints === 3) {
                         textWindow.innerHTML = `You are now so deadly that very few fighters can match you blow for blow. One of them is a grizzled ex-Centurion from the Fourteenth Legion. He nods respectfully as you approach.`;
-                        if (trainingSuccessChance > 75) {
+                        if (trainingSuccessChance > 65) {
                             textWindow.innerHTML += `You nod at the ex-officer and step smartly towards him. He meets your sword and the sparring begins. What follows is a whirlwind of precise striking, lightning-quick feints and hypnotic footwork. The dance goes on for some time. The training pit has fallen silent. Everybody's eyes are locked on you and your partner, mouths hanging open in astonishment and heads shaking quietly at the level of skill on display. As the session ends, you feel utterly exhilarated. Your excitement is mirrored in the Centurion's face - each fighter recognises the other as a true blademaster.`;
                             playerStats.Proficiency += 5;
                         } else {
@@ -1120,7 +1120,7 @@ function displayTrainingPit() {
                         trainingPoints -= 1;
                     } else if (trainingPoints <= 2) {
                         textWindow.innerHTML = `The ex-Centurion grins at you as you approach. "Good to see you, ${playerNameHeader.textContent}! I've been waiting for you to come back. I've been practicing a counter-move to that feint of yours. Come, let me show you..."`;
-                        if (trainingSuccessChance > 85) {
+                        if (trainingSuccessChance > 80) {
                             textWindow.innerHTML += `You nod at the ex-officer and step smartly towards him. He meets your sword and the sparring begins. What follows is a whirlwind of precise striking, lightning-quick feints and hypnotic footwork. The dance goes on for some time. The training pit has fallen silent. Everybody's eyes are locked on you and your partner, mouths hanging open in astonishment and heads shaking quietly at the level of skill on display. As the session ends, you feel utterly exhilarated. Your excitement is mirrored in the Centurion's face - each fighter recognises the other as a true blademaster.`;
                             playerStats.Proficiency += 3;
                         } else {
@@ -1141,8 +1141,6 @@ function displayTrainingPit() {
     displayStats(playerStats)
     if (trainingPoints === 0) {
         trainButton.disabled = true
-    } else {
-        trainButton.disabled = false
     }
     })
 
@@ -1220,7 +1218,63 @@ function displayQuartermaster() {
     textWindow.innerHTML = `Tucked away in the bowels of the arena, not far from the training pits, the quartermaster's storeroom holds a motley assortment of bladed weapons, armours and replacement parts. Many of the items are available for trade and sale, provided you have the money available. From time to time, more exotic items pass through the quartermaster's hands, acquired through all manner of methods, each one more questionable than the last. You've heard rumours that these are only made available to veteran gladiators. If you survive long enough, you may one day be granted access.`;
     innerGameWindow.appendChild(backButton);
 
+    const buyEquipmentTable = document.createElement('table')
+    buyEquipmentTable.setAttribute('class', 'buy-equipment-table')
+    const row1 = document.createElement('tr')
+    const row2 = document.createElement('tr')
+
+    for (let cell = 1; cell <= 4; cell++) {
+        const tableCell = document.createElement('td')
+        const buyButton = document.createElement('button')
+        buyButton.setAttribute('class', `button${cell}`)
+
+        buyButton.innerHTML = `BUY<br>${ironGear[cell-1].name}<br>Price: ${ironGear[cell-1].value}`
+
+        if (cell <= 2) {
+            tableCell.appendChild(buyButton)
+            row1.appendChild(tableCell)
+        } else {
+            tableCell.appendChild(buyButton)
+            row2.appendChild(tableCell)
+        }
+
+        buyButton.addEventListener('click', (e) => {
+            if (e.target.className === 'button1') {
+                if (playerStats.Sesterces >= ironGear[0].value) {
+                    playerEquipment.Torso = [ironGear[0].name, ironGear[0].protection, ironGear[0].description, ironGear[0].value]
+                    playerStats.Sesterces -= ironGear[0].value
+                    tableCell.removeChild(buyButton)
+                }
+            } else if (e.target.className === 'button2') {
+                if (playerStats.Sesterces >= ironGear[1].value) {
+                    playerEquipment.Head = [ironGear[1].name, ironGear[1].protection, ironGear[1].description, ironGear[1].value]
+                    playerStats.Sesterces -= ironGear[1].value
+                    tableCell.removeChild(buyButton)
+                }
+            } else if (e.target.className === 'button3') {
+                if (playerStats.Sesterces >= ironGear[2].value) {
+                    playerEquipment.Offhand = [ironGear[2].name, ironGear[2].protection, ironGear[2].description, ironGear[2].value]
+                    playerStats.Sesterces -= ironGear[2].value
+                    tableCell.removeChild(buyButton)
+                }
+            } else if (e.target.className === 'button4') {
+                if (playerStats.Sesterces >= ironGear[3].value) {
+                    playerEquipment.Weapon = [ironGear[3].name, ironGear[3].damage, ironGear[3].description, ironGear[3].value]
+                    playerStats.Sesterces -= ironGear[3].value
+                    tableCell.removeChild(buyButton)
+                }
+            } displayEquipment(playerEquipment)
+        })
+    }
+
+    buyEquipmentTable.appendChild(row1)
+    buyEquipmentTable.appendChild(row2)
+    innerGameWindow.appendChild(buyEquipmentTable)
+
     backButton.addEventListener('click', () => {
+        if (buyEquipmentTable) {
+            innerGameWindow.removeChild(buyEquipmentTable)
+        }
         innerGameWindow.removeChild(backButton);
         textWindow.style.border = 'none';
         textWindow.innerHTML = '';
